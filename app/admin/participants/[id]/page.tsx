@@ -3,21 +3,20 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { revalidatePath } from 'next/cache'
 
-export default async function EditParticipantPage({ params }: { params: { id: string } }) {
+export default async function EditParticipantPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
-    redirect('/login')
-  }
+  if (!user) redirect('/login')
 
   const adminClient = createAdminClient()
 
-  // Recupera il partecipante
   const { data: participant } = await adminClient
     .from('profiles')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single()
 
   if (!participant) {
