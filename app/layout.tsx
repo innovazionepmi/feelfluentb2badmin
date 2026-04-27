@@ -11,7 +11,10 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "FeelFluent B2B Admin",
+  title: {
+    default: "FeelFluent B2B Admin",
+    template: "%s · FeelFluent B2B",
+  },
   description: "Piattaforma di gestione formazione linguistica aziendale",
 };
 
