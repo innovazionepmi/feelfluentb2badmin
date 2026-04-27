@@ -141,7 +141,7 @@ export default async function TutorAvailabilityPage() {
       <header className="bg-white shadow">
         <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
           <div>
-            <Link href="/dashboard" className="text-blue-600 hover:underline text-sm block mb-2">
+            <Link href="/dashboard" className="text-[var(--ff-red)] hover:underline text-sm block mb-2">
               Dashboard
             </Link>
             <h1 className="text-2xl font-bold">Le mie disponibilità</h1>
@@ -201,7 +201,7 @@ export default async function TutorAvailabilityPage() {
                     </td>
                     <td className="px-6 py-3 text-sm text-gray-600">
                       {slot.is_recurring ? (
-                        <span className="text-blue-600">
+                        <span className="text-[var(--ff-red)]">
                           {recurrenceLabel(slot.recurrence_rule)}
                         </span>
                       ) : (

@@ -31,14 +31,14 @@ export default async function CompaniesPage() {
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div>
-            <Link href="/dashboard" className="text-blue-600 hover:underline text-sm mb-1 block">
+            <Link href="/dashboard" className="text-[var(--ff-red)] hover:underline text-sm mb-1 block">
               ← Dashboard
             </Link>
             <h1 className="text-2xl font-bold text-gray-900">Gestione Aziende</h1>
           </div>
           <Link
             href="/admin/companies/new"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+            className="bg-[var(--ff-red)] text-white px-4 py-2 rounded-lg hover:bg-[var(--ff-red-700)] transition"
           >
             + Nuova Azienda
           </Link>
@@ -51,7 +51,7 @@ export default async function CompaniesPage() {
             <p className="text-gray-500 mb-4">Nessuna azienda presente</p>
             <Link
               href="/admin/companies/new"
-              className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+              className="inline-block bg-[var(--ff-red)] text-white px-6 py-2 rounded-lg hover:bg-[var(--ff-red-700)] transition"
             >
               Crea la prima azienda
             </Link>
@@ -97,7 +97,7 @@ export default async function CompaniesPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <Link
                         href={`/admin/companies/${company.id}`}
-                        className="text-blue-600 hover:underline mr-4"
+                        className="text-[var(--ff-red)] hover:underline mr-4"
                       >
                         Modifica
                       </Link>

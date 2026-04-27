@@ -214,23 +214,19 @@ export default async function ProgramDetailPage({ params }: Props) {
   const groupCount = (conversationGroups || []).length
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div>
-            <div className="flex items-center gap-2">
-              <Link href="/admin/programs" className="text-gray-400 hover:text-gray-600 text-sm">
-                ← Programmi
-              </Link>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mt-1">{program.name}</h1>
-            <div className="flex items-center gap-3 mt-1">
-              <span className="text-sm text-gray-500">{program.companies?.name}</span>
-              <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${STATUS_COLORS[program.status]}`}>
-                {STATUS_LABELS[program.status]}
-              </span>
-            </div>
+    <div className="min-h-screen bg-[var(--ff-paper)]">
+      <header className="bg-white border-b border-[var(--ff-border)] shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <Link href="/admin/programs" className="text-xs text-[var(--ff-muted)] hover:text-gray-700 mb-1 block">
+            ← Programmi
+          </Link>
+          <div className="flex items-center gap-3 mt-0.5">
+            <h1 className="text-xl font-bold text-gray-900">{program.name}</h1>
+            <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${STATUS_COLORS[program.status]}`}>
+              {STATUS_LABELS[program.status]}
+            </span>
           </div>
+          <p className="text-xs text-[var(--ff-muted)] mt-0.5">{(program.companies as any)?.name}</p>
         </div>
       </header>
       <AdminNav />
@@ -239,37 +235,37 @@ export default async function ProgramDetailPage({ params }: Props) {
 
         {/* Stats rapide */}
         <div className="grid grid-cols-2 sm:grid-cols-6 gap-4">
-          <div className="bg-white rounded-lg shadow p-4 text-center">
-            <div className="text-3xl font-bold text-blue-600">{levelCheckTotal}</div>
-            <div className="text-xs text-gray-500 mt-1">Partecipanti</div>
+          <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center">
+            <div className="text-3xl font-bold text-gray-800">{levelCheckTotal}</div>
+            <div className="text-xs text-[var(--ff-muted)] mt-1">Partecipanti</div>
           </div>
-          <div className="bg-white rounded-lg shadow p-4 text-center">
+          <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center">
             <div className="text-3xl font-bold text-green-600">{levelCheckDone}</div>
-            <div className="text-xs text-gray-500 mt-1">Level check completati</div>
+            <div className="text-xs text-[var(--ff-muted)] mt-1">Level check ok</div>
           </div>
-          <div className="bg-white rounded-lg shadow p-4 text-center">
+          <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center">
             <div className="text-3xl font-bold text-orange-500">{levelCheckTotal - levelCheckDone}</div>
-            <div className="text-xs text-gray-500 mt-1">Level check mancanti</div>
+            <div className="text-xs text-[var(--ff-muted)] mt-1">In attesa</div>
           </div>
-          <div className="bg-white rounded-lg shadow p-4 text-center">
-            <div className="text-3xl font-bold text-purple-600">{assignedTutors.length}</div>
-            <div className="text-xs text-gray-500 mt-1">Tutor nel programma</div>
+          <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center">
+            <div className="text-3xl font-bold text-gray-700">{assignedTutors.length}</div>
+            <div className="text-xs text-[var(--ff-muted)] mt-1">Tutor</div>
           </div>
           <Link
             href={`/admin/programs/${id}/groups`}
-            className="bg-white rounded-lg shadow p-4 text-center hover:bg-teal-50 hover:shadow-md transition group"
+            className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center hover:border-[var(--ff-red-100)] hover:shadow-md transition group"
           >
-            <div className="text-3xl font-bold text-teal-600">{groupCount}</div>
-            <div className="text-xs text-gray-500 mt-1 group-hover:text-teal-600 transition">
+            <div className="text-3xl font-bold text-gray-800">{groupCount}</div>
+            <div className="text-xs text-[var(--ff-red)] font-semibold mt-1 group-hover:underline">
               Gruppi →
             </div>
           </Link>
           <Link
             href={`/admin/programs/${id}/conversations`}
-            className="bg-white rounded-lg shadow p-4 text-center hover:bg-indigo-50 hover:shadow-md transition group"
+            className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center hover:border-[var(--ff-red-100)] hover:shadow-md transition group"
           >
-            <div className="text-3xl font-bold text-indigo-600">📅</div>
-            <div className="text-xs text-gray-500 mt-1 group-hover:text-indigo-600 transition">
+            <div className="text-3xl font-bold">📅</div>
+            <div className="text-xs text-[var(--ff-red)] font-semibold mt-1 group-hover:underline">
               Conversazioni →
             </div>
           </Link>
@@ -277,122 +273,82 @@ export default async function ProgramDetailPage({ params }: Props) {
 
         <div className="grid lg:grid-cols-3 gap-8">
 
-          {/* Colonna sinistra: dati programma + aggiungi partecipanti + tutor */}
+          {/* Colonna sinistra */}
           <div className="lg:col-span-1 space-y-6">
 
-            {/* Form modifica programma */}
-            <details className="bg-white rounded-lg shadow">
-              <summary className="px-6 py-4 font-semibold text-gray-900 cursor-pointer select-none">
+            <details className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm">
+              <summary className="px-6 py-4 font-semibold text-gray-900 cursor-pointer select-none text-sm">
                 ⚙️ Dati programma
               </summary>
-              <form action={updateProgram} className="px-6 pb-6 space-y-4 border-t pt-4">
+              <form action={updateProgram} className="px-6 pb-6 space-y-4 border-t border-[var(--ff-border)] pt-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
-                  <input
-                    type="text"
-                    name="name"
-                    required
-                    defaultValue={program.name}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  <label className="block text-xs font-semibold text-gray-600 mb-1">Nome</label>
+                  <input type="text" name="name" required defaultValue={program.name}
+                    className="w-full px-3 py-2 border border-[var(--ff-border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Azienda</label>
-                  <select
-                    name="company_id"
-                    defaultValue={program.company_id}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    {(companies || []).map(c => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
+                  <label className="block text-xs font-semibold text-gray-600 mb-1">Azienda</label>
+                  <select name="company_id" defaultValue={program.company_id}
+                    className="w-full px-3 py-2 border border-[var(--ff-border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]">
+                    {(companies || []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Stato</label>
-                  <select
-                    name="status"
-                    defaultValue={program.status}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    {Object.entries(STATUS_LABELS).map(([val, label]) => (
-                      <option key={val} value={val}>{label}</option>
-                    ))}
+                  <label className="block text-xs font-semibold text-gray-600 mb-1">Stato</label>
+                  <select name="status" defaultValue={program.status}
+                    className="w-full px-3 py-2 border border-[var(--ff-border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]">
+                    {Object.entries(STATUS_LABELS).map(([val, label]) => <option key={val} value={val}>{label}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrizione</label>
-                  <textarea
-                    name="description"
-                    rows={2}
-                    defaultValue={program.description || ''}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                  />
+                  <label className="block text-xs font-semibold text-gray-600 mb-1">Descrizione</label>
+                  <textarea name="description" rows={2} defaultValue={program.description || ''}
+                    className="w-full px-3 py-2 border border-[var(--ff-border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] resize-none" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Inizio</label>
-                    <input
-                      type="date"
-                      name="start_date"
-                      defaultValue={program.start_date}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Inizio</label>
+                    <input type="date" name="start_date" defaultValue={program.start_date}
+                      className="w-full px-3 py-2 border border-[var(--ff-border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Fine</label>
-                    <input
-                      type="date"
-                      name="end_date"
-                      defaultValue={program.end_date || ''}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Fine</label>
+                    <input type="date" name="end_date" defaultValue={program.end_date || ''}
+                      className="w-full px-3 py-2 border border-[var(--ff-border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]" />
                   </div>
                 </div>
-                <button
-                  type="submit"
-                  className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium"
-                >
+                <button type="submit"
+                  className="w-full bg-[var(--ff-red)] hover:bg-[var(--ff-red-700)] text-white py-2 rounded-lg transition text-sm font-semibold">
                   Salva modifiche
                 </button>
               </form>
             </details>
 
-            {/* Aggiungi partecipanti (bulk) */}
-            <details className="bg-white rounded-lg shadow" open>
-              <summary className="px-6 py-4 font-semibold text-gray-900 cursor-pointer select-none">
+            <details className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm" open>
+              <summary className="px-6 py-4 font-semibold text-gray-900 cursor-pointer select-none text-sm">
                 👥 Aggiungi partecipanti
                 {availableParticipants.length > 0 && (
-                  <span className="ml-2 text-xs font-normal text-gray-400">
+                  <span className="ml-2 text-xs font-normal text-[var(--ff-muted)]">
                     ({availableParticipants.length} disponibili)
                   </span>
                 )}
               </summary>
-              <div className="px-6 pb-6 border-t pt-4">
-                <BulkAddParticipants
-                  participants={availableParticipants}
-                  addBulkParticipants={addBulkParticipants}
-                />
+              <div className="px-6 pb-6 border-t border-[var(--ff-border)] pt-4">
+                <BulkAddParticipants participants={availableParticipants} addBulkParticipants={addBulkParticipants} />
               </div>
             </details>
 
-            {/* Gestione tutor del programma */}
-            <details className="bg-white rounded-lg shadow" open>
-              <summary className="px-6 py-4 font-semibold text-gray-900 cursor-pointer select-none">
+            <details className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm" open>
+              <summary className="px-6 py-4 font-semibold text-gray-900 cursor-pointer select-none text-sm">
                 👩‍🏫 Tutor del programma
                 {assignedTutors.length > 0 && (
-                  <span className="ml-2 text-xs font-normal text-gray-400">
+                  <span className="ml-2 text-xs font-normal text-[var(--ff-muted)]">
                     ({assignedTutors.length} assegnati)
                   </span>
                 )}
               </summary>
-              <div className="px-6 pb-6 border-t pt-4">
-                <ProgramTutors
-                  assignedTutors={assignedTutors}
-                  availableTutors={availableTutors}
-                  addTutor={addTutor}
-                  removeTutor={removeTutor}
-                />
+              <div className="px-6 pb-6 border-t border-[var(--ff-border)] pt-4">
+                <ProgramTutors assignedTutors={assignedTutors} availableTutors={availableTutors} addTutor={addTutor} removeTutor={removeTutor} />
               </div>
             </details>
 
@@ -400,16 +356,16 @@ export default async function ProgramDetailPage({ params }: Props) {
 
           {/* Colonna destra: tabella partecipanti */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="px-6 py-4 border-b flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">
+            <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-[var(--ff-border)] flex items-center justify-between bg-[var(--ff-paper)]">
+                <h2 className="text-sm font-bold text-gray-900">
                   Partecipanti iscritti
-                  <span className="ml-2 text-sm font-normal text-gray-500">
-                    ({levelCheckDone}/{levelCheckTotal} level check completati)
+                  <span className="ml-2 text-xs font-normal text-[var(--ff-muted)]">
+                    ({levelCheckDone}/{levelCheckTotal} level check)
                   </span>
                 </h2>
                 {levelCheckTotal > 0 && (
-                  <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="w-28 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-green-500 rounded-full transition-all"
                       style={{ width: `${levelCheckTotal > 0 ? (levelCheckDone / levelCheckTotal) * 100 : 0}%` }}
@@ -419,51 +375,45 @@ export default async function ProgramDetailPage({ params }: Props) {
               </div>
 
               {!programParticipants || programParticipants.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">
+                <div className="p-8 text-center text-[var(--ff-muted)] text-sm">
                   Nessun partecipante iscritto. Usa il pannello a sinistra per aggiungerne.
                 </div>
               ) : (
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-[var(--ff-border)]">
+                  <thead className="bg-[var(--ff-paper)]">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Partecipante</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Level Check</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Livello</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Azioni</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Partecipante</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Level Check</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Livello</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Azioni</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-[var(--ff-border)]">
                     {programParticipants.map((pp) => (
-                      <tr key={pp.id} className="hover:bg-gray-50">
+                      <tr key={pp.id} className="hover:bg-[var(--ff-paper)] transition-colors">
                         <td className="px-4 py-3">
-                          <div className="text-sm font-medium text-gray-900">
-                            {pp.profiles?.full_name || '—'}
-                          </div>
-                          <div className="text-xs text-gray-400">{pp.profiles?.email}</div>
+                          <div className="text-sm font-semibold text-gray-900">{(pp.profiles as any)?.full_name || '—'}</div>
+                          <div className="text-xs text-[var(--ff-muted)]">{(pp.profiles as any)?.email}</div>
                         </td>
                         <td className="px-4 py-3">
                           {pp.level_check_completed ? (
-                            <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                              ✓ Completato
-                            </span>
+                            <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800">✓ Completato</span>
                           ) : (
-                            <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-gray-100 text-gray-600">
-                              In attesa
-                            </span>
+                            <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-gray-100 text-gray-600">In attesa</span>
                           )}
                           {pp.level_check_date && (
-                            <div className="text-xs text-gray-400 mt-0.5">
+                            <div className="text-xs text-[var(--ff-muted)] mt-0.5">
                               {new Date(pp.level_check_date).toLocaleDateString('it-IT')}
                             </div>
                           )}
                         </td>
                         <td className="px-4 py-3">
                           {pp.assigned_level ? (
-                            <span className="px-2 py-1 text-sm font-bold bg-blue-100 text-blue-800 rounded">
+                            <span className="px-2 py-1 text-sm font-bold bg-[var(--ff-red-50)] text-[var(--ff-red)] rounded-lg">
                               {pp.assigned_level}
                             </span>
                           ) : (
-                            <span className="text-gray-400 text-xs">—</span>
+                            <span className="text-[var(--ff-muted)] text-xs">—</span>
                           )}
                         </td>
                         <td className="px-4 py-3">

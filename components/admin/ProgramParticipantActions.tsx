@@ -61,7 +61,7 @@ export default function ProgramParticipantActions({
       <div className="flex items-center gap-3 text-sm">
         <button
           onClick={() => setShowLevelForm(!showLevelForm)}
-          className="text-blue-600 hover:underline"
+          className="text-[var(--ff-red)] hover:underline"
         >
           {pp.level_check_completed ? 'Modifica livello' : 'Assegna livello'}
         </button>
@@ -86,7 +86,7 @@ export default function ProgramParticipantActions({
             <select
               name="assigned_level"
               defaultValue={pp.assigned_level || ''}
-              className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[var(--ff-red)]"
             >
               <option value="">— Seleziona livello —</option>
               {levelLabels.map(l => (
@@ -100,7 +100,7 @@ export default function ProgramParticipantActions({
             <select
               name="level_check_tutor_id"
               defaultValue={pp.level_check_tutor_id || ''}
-              className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[var(--ff-red)]"
             >
               <option value="">— Seleziona tutor —</option>
               {tutors.map(t => (
@@ -115,7 +115,7 @@ export default function ProgramParticipantActions({
               name="notes"
               defaultValue={pp.notes || ''}
               rows={2}
-              className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+              className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[var(--ff-red)] resize-none"
               placeholder="Note sul level check..."
             />
           </div>
@@ -124,7 +124,7 @@ export default function ProgramParticipantActions({
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 bg-blue-600 text-white py-1.5 rounded hover:bg-blue-700 transition text-xs font-medium disabled:opacity-50"
+              className="flex-1 bg-[var(--ff-red)] text-white py-1.5 rounded hover:bg-[var(--ff-red-700)] transition text-xs font-medium disabled:opacity-50"
             >
               {submitting ? '...' : 'Salva'}
             </button>

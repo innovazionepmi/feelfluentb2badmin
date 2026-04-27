@@ -246,22 +246,18 @@ export default async function ProgramGroupsPage({ params }: Props) {
   const totalWithLevel = (programParticipants || []).length
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-[var(--ff-paper)]">
+      <header className="bg-white border-b border-[var(--ff-border)] shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center gap-2 text-sm text-gray-400">
+          <div className="flex items-center gap-2 text-xs text-[var(--ff-muted)]">
             <Link href="/admin/programs" className="hover:text-gray-600">Programmi</Link>
             <span>/</span>
             <Link href={`/admin/programs/${programId}`} className="hover:text-gray-600">{program.name}</Link>
             <span>/</span>
-            <span className="text-gray-700 font-medium">Gruppi di conversazione</span>
+            <span className="text-gray-700 font-semibold">Gruppi</span>
           </div>
-          <div className="flex items-center justify-between mt-1">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Gruppi di conversazione</h1>
-              <p className="text-sm text-gray-500 mt-0.5">{program.name} · {program.companies?.name}</p>
-            </div>
-          </div>
+          <h1 className="text-xl font-bold text-gray-900 mt-1">Gruppi di conversazione</h1>
+          <p className="text-xs text-[var(--ff-muted)] mt-0.5">{program.name} · {(program.companies as any)?.name}</p>
         </div>
       </header>
       <AdminNav />
@@ -270,21 +266,21 @@ export default async function ProgramGroupsPage({ params }: Props) {
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg shadow p-4 text-center">
-            <div className="text-3xl font-bold text-blue-600">{totalGroups}</div>
-            <div className="text-xs text-gray-500 mt-1">Gruppi creati</div>
+          <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center">
+            <div className="text-3xl font-bold text-gray-800">{totalGroups}</div>
+            <div className="text-xs text-[var(--ff-muted)] mt-1">Gruppi creati</div>
           </div>
-          <div className="bg-white rounded-lg shadow p-4 text-center">
+          <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center">
             <div className="text-3xl font-bold text-green-600">{totalAssigned}</div>
-            <div className="text-xs text-gray-500 mt-1">Partecipanti assegnati</div>
+            <div className="text-xs text-[var(--ff-muted)] mt-1">Partecipanti assegnati</div>
           </div>
-          <div className="bg-white rounded-lg shadow p-4 text-center">
+          <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center">
             <div className="text-3xl font-bold text-orange-500">{totalUnassigned}</div>
-            <div className="text-xs text-gray-500 mt-1">Da assegnare</div>
+            <div className="text-xs text-[var(--ff-muted)] mt-1">Da assegnare</div>
           </div>
-          <div className="bg-white rounded-lg shadow p-4 text-center">
+          <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center">
             <div className="text-3xl font-bold text-gray-600">{totalWithLevel}</div>
-            <div className="text-xs text-gray-500 mt-1">Con livello assegnato</div>
+            <div className="text-xs text-[var(--ff-muted)] mt-1">Con livello assegnato</div>
           </div>
         </div>
 

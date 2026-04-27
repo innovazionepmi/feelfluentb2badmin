@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
               <p className="text-sm text-gray-500">
                 Controlla la tua casella di posta. Hai ricevuto un link per reimpostare la password.
               </p>
-              <Link href="/login" className="block text-sm text-blue-600 hover:underline mt-4">
+              <Link href="/login" className="block text-sm text-[var(--ff-red)] hover:underline mt-4">
                 Torna al login
               </Link>
             </div>
@@ -64,7 +64,7 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--ff-red)] focus:border-transparent"
                   placeholder="tua@email.com"
                 />
               </div>
@@ -78,13 +78,13 @@ export default function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold"
+                className="w-full bg-[var(--ff-red)] hover:bg-[var(--ff-red-700)] text-white py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition font-bold"
               >
                 {loading ? 'Invio...' : 'Invia link di reset'}
               </button>
 
               <div className="text-center">
-                <Link href="/login" className="text-sm text-blue-600 hover:underline">
+                <Link href="/login" className="text-sm text-[var(--ff-red)] hover:underline">
                   Torna al login
                 </Link>
               </div>

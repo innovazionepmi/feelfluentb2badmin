@@ -45,9 +45,9 @@ const STATUS_LABELS: Record<string, string> = {
   cancelled: 'Annullata',
 }
 const STATUS_COLORS: Record<string, string> = {
-  scheduled: 'bg-blue-100 text-blue-700',
+  scheduled: 'bg-[var(--ff-red-50)] text-[var(--ff-red)]',
   completed: 'bg-green-100 text-green-700',
-  cancelled: 'bg-red-100 text-red-700',
+  cancelled: 'bg-gray-100 text-gray-500',
 }
 const LEVEL_COLORS: Record<string, string> = {
   A1: 'bg-red-100 text-red-700',
@@ -143,7 +143,7 @@ export default function ConversationCard({
   }
 
   return (
-    <div className={`bg-white rounded-lg border ${isCancelled ? 'opacity-60 border-gray-200' : 'border-gray-200 shadow-sm'}`}>
+    <div className={`bg-white rounded-xl border shadow-sm transition-opacity ${isCancelled ? 'opacity-60 border-[var(--ff-border)]' : 'border-[var(--ff-border)]'}`}>
 
       {/* Header */}
       <div className="px-4 py-3 flex items-start justify-between gap-4">
@@ -152,19 +152,19 @@ export default function ConversationCard({
             {conversation.group.level}
           </span>
           <div className="min-w-0">
-            <div className="text-sm font-semibold text-gray-900">
+            <div className="text-sm font-bold text-gray-900">
               {conversation.group.name}
-              <span className="ml-2 text-gray-400 font-normal">#{sessionNumber}</span>
+              <span className="ml-2 text-[var(--ff-muted)] font-normal text-xs">#{sessionNumber}</span>
             </div>
-            <div className="text-xs text-gray-500 mt-0.5">
-              {date} · {conversation.start_time.slice(0, 5)}–{conversation.end_time.slice(0, 5)} ({conversation.duration_minutes}')
+            <div className="text-xs text-[var(--ff-muted)] mt-0.5">
+              {date} · {conversation.start_time.slice(0, 5)}–{conversation.end_time.slice(0, 5)} ({conversation.duration_minutes}&#39;)
             </div>
-            <div className="text-xs text-gray-500">Tutor: {conversation.tutor?.full_name || '—'}</div>
+            <div className="text-xs text-[var(--ff-muted)]">Tutor: {conversation.tutor?.full_name || '—'}</div>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {attendances.length > 0 && (
-            <span className="text-xs text-gray-400">{presentCount}/{members.length} presenti</span>
+            <span className="text-xs text-[var(--ff-muted)]">{presentCount}/{members.length}</span>
           )}
           <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${STATUS_COLORS[conversation.status]}`}>
             {STATUS_LABELS[conversation.status]}
@@ -173,17 +173,17 @@ export default function ConversationCard({
       </div>
 
       {conversation.notes && (
-        <div className="px-4 pb-2 text-xs text-gray-500 italic">{conversation.notes}</div>
+        <div className="px-4 pb-2 text-xs text-[var(--ff-muted)] italic">{conversation.notes}</div>
       )}
 
       {/* Azioni principali */}
       {!isCancelled && (
-        <div className="px-4 pb-3 flex flex-wrap items-center gap-2 border-t pt-3">
+        <div className="px-4 pb-3 flex flex-wrap items-center gap-2 border-t border-[var(--ff-border)] pt-3">
           <a
             href={conversation.meeting_link}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs px-3 py-1.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition"
+            className="text-xs px-3 py-1.5 rounded-lg border border-[var(--ff-border)] text-gray-700 hover:bg-[var(--ff-paper)] transition"
           >
             🔗 Link meeting
           </a>
@@ -191,7 +191,9 @@ export default function ConversationCard({
           <button
             onClick={() => { setShowReschedule(!showReschedule); setShowAttendance(false) }}
             className={`text-xs px-3 py-1.5 rounded-lg border transition ${
-              showReschedule ? 'border-orange-400 bg-orange-50 text-orange-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              showReschedule
+                ? 'border-orange-400 bg-orange-50 text-orange-700'
+                : 'border-[var(--ff-border)] text-gray-700 hover:bg-[var(--ff-paper)]'
             }`}
           >
             📅 Rinvia
@@ -200,10 +202,12 @@ export default function ConversationCard({
           <button
             onClick={() => { setShowAttendance(!showAttendance); setShowReschedule(false) }}
             className={`text-xs px-3 py-1.5 rounded-lg border transition ${
-              showAttendance ? 'border-blue-400 bg-blue-50 text-blue-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              showAttendance
+                ? 'border-[var(--ff-red-100)] bg-[var(--ff-red-50)] text-[var(--ff-red)]'
+                : 'border-[var(--ff-border)] text-gray-700 hover:bg-[var(--ff-paper)]'
             }`}
           >
-            Presenze {members.length > 0 && <span className="text-gray-400">({members.length})</span>}
+            Presenze {members.length > 0 && <span className="text-[var(--ff-muted)]">({members.length})</span>}
           </button>
 
           {conversation.status === 'scheduled' && (
@@ -219,7 +223,7 @@ export default function ConversationCard({
             <button
               onClick={() => handleUpdateStatus('scheduled')}
               disabled={updatingStatus}
-              className="text-xs px-3 py-1.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition disabled:opacity-50"
+              className="text-xs px-3 py-1.5 rounded-lg border border-[var(--ff-border)] text-gray-600 hover:bg-[var(--ff-paper)] transition disabled:opacity-50"
             >
               Riapri
             </button>
@@ -228,7 +232,7 @@ export default function ConversationCard({
           <button
             onClick={() => handleUpdateStatus('cancelled')}
             disabled={updatingStatus}
-            className="text-xs px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition disabled:opacity-50"
+            className="text-xs px-3 py-1.5 rounded-lg border border-[var(--ff-red-100)] text-[var(--ff-red)] hover:bg-[var(--ff-red-50)] transition disabled:opacity-50"
           >
             Annulla
           </button>
@@ -237,7 +241,7 @@ export default function ConversationCard({
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className="text-xs text-gray-400 hover:text-red-500 transition ml-auto disabled:opacity-50"
+              className="text-xs text-[var(--ff-muted)] hover:text-[var(--ff-red)] transition ml-auto disabled:opacity-50"
             >
               Elimina
             </button>
@@ -246,18 +250,20 @@ export default function ConversationCard({
       )}
 
       {isCancelled && (
-        <div className="px-4 pb-3 border-t pt-3 flex gap-2">
+        <div className="px-4 pb-3 border-t border-[var(--ff-border)] pt-3 flex gap-2">
           <button
             onClick={() => handleUpdateStatus('scheduled')}
             disabled={updatingStatus}
-            className="text-xs px-3 py-1.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition disabled:opacity-50"
+            className="text-xs px-3 py-1.5 rounded-lg border border-[var(--ff-border)] text-gray-600 hover:bg-[var(--ff-paper)] transition disabled:opacity-50"
           >
             Riattiva
           </button>
           <button
-            onClick={() => { setShowReschedule(!showReschedule) }}
+            onClick={() => setShowReschedule(!showReschedule)}
             className={`text-xs px-3 py-1.5 rounded-lg border transition ${
-              showReschedule ? 'border-orange-400 bg-orange-50 text-orange-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              showReschedule
+                ? 'border-orange-400 bg-orange-50 text-orange-700'
+                : 'border-[var(--ff-border)] text-gray-700 hover:bg-[var(--ff-paper)]'
             }`}
           >
             📅 Rinvia
@@ -267,11 +273,11 @@ export default function ConversationCard({
 
       {/* Pannello rinvio */}
       {showReschedule && (
-        <div className="border-t bg-orange-50 px-4 py-4">
-          <h4 className="text-xs font-semibold text-orange-700 mb-3 uppercase tracking-wide">Rinvia sessione</h4>
+        <div className="border-t border-[var(--ff-border)] bg-orange-50 px-4 py-4">
+          <h4 className="text-xs font-bold text-orange-700 mb-3 uppercase tracking-wide">Rinvia sessione</h4>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Nuova data</label>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">Nuova data</label>
               <input
                 type="date"
                 value={newDate}
@@ -280,7 +286,7 @@ export default function ConversationCard({
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Nuovo orario</label>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">Nuovo orario</label>
               <input
                 type="time"
                 value={newStartTime}
@@ -289,20 +295,20 @@ export default function ConversationCard({
               />
             </div>
           </div>
-          <p className="text-xs text-gray-500 mt-2">
-            Fine prevista: <strong>{previewEndTime}</strong> ({conversation.duration_minutes}' di durata)
+          <p className="text-xs text-[var(--ff-muted)] mt-2">
+            Fine prevista: <strong>{previewEndTime}</strong> ({conversation.duration_minutes}&#39; di durata)
           </p>
           <div className="flex gap-2 mt-3">
             <button
               onClick={handleReschedule}
               disabled={rescheduling || !newDate || !newStartTime}
-              className="flex-1 bg-orange-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-orange-600 transition disabled:opacity-50"
+              className="flex-1 bg-orange-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-orange-600 transition disabled:opacity-50"
             >
               {rescheduling ? 'Salvataggio...' : 'Conferma rinvio'}
             </button>
             <button
               onClick={() => setShowReschedule(false)}
-              className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg text-sm hover:bg-gray-300 transition"
+              className="flex-1 bg-white border border-[var(--ff-border)] text-gray-700 py-2 rounded-lg text-sm hover:bg-[var(--ff-paper)] transition"
             >
               Annulla
             </button>
@@ -312,14 +318,14 @@ export default function ConversationCard({
 
       {/* Pannello presenze */}
       {showAttendance && members.length > 0 && (
-        <div className="border-t bg-gray-50 px-4 py-4">
-          <h4 className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">Presenze — sessione #{sessionNumber}</h4>
+        <div className="border-t border-[var(--ff-border)] bg-[var(--ff-paper)] px-4 py-4">
+          <h4 className="text-xs font-bold text-gray-700 mb-3 uppercase tracking-wide">Presenze — sessione #{sessionNumber}</h4>
           <div className="space-y-2">
             {members.map(m => (
               <div key={m.participant_id} className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-gray-900 truncate">{m.full_name}</div>
-                  <div className="text-xs text-gray-400 truncate">{m.email}</div>
+                  <div className="text-sm font-semibold text-gray-900 truncate">{m.full_name}</div>
+                  <div className="text-xs text-[var(--ff-muted)] truncate">{m.email}</div>
                 </div>
                 <select
                   value={attendanceState[m.participant_id]?.status || 'present'}
@@ -327,7 +333,7 @@ export default function ConversationCard({
                     ...prev,
                     [m.participant_id]: { ...prev[m.participant_id], status: e.target.value },
                   }))}
-                  className="text-xs px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+                  className="text-xs px-2 py-1.5 border border-[var(--ff-border)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--ff-red)] bg-white"
                 >
                   {ATTENDANCE_STATUS.map(s => (
                     <option key={s.value} value={s.value}>{s.label}</option>
@@ -341,7 +347,7 @@ export default function ConversationCard({
                     ...prev,
                     [m.participant_id]: { ...prev[m.participant_id], notes: e.target.value },
                   }))}
-                  className="text-xs px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 w-28"
+                  className="text-xs px-2 py-1.5 border border-[var(--ff-border)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--ff-red)] w-28 bg-white"
                 />
               </div>
             ))}
@@ -349,7 +355,7 @@ export default function ConversationCard({
           <button
             onClick={handleSaveAttendance}
             disabled={savingAttendance}
-            className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50"
+            className="mt-4 w-full bg-[var(--ff-red)] hover:bg-[var(--ff-red-700)] text-white py-2 rounded-lg text-sm font-semibold transition disabled:opacity-50"
           >
             {savingAttendance ? 'Salvataggio...' : 'Salva presenze'}
           </button>
@@ -357,7 +363,7 @@ export default function ConversationCard({
       )}
 
       {showAttendance && members.length === 0 && (
-        <div className="border-t bg-gray-50 px-4 py-4 text-sm text-gray-400 italic">
+        <div className="border-t border-[var(--ff-border)] bg-[var(--ff-paper)] px-4 py-4 text-sm text-[var(--ff-muted)] italic">
           Nessun partecipante assegnato a questo gruppo.
         </div>
       )}

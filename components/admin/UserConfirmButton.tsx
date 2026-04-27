@@ -47,7 +47,7 @@ export default function UserConfirmButton({ userId, userEmail, confirmUser, rese
         <button
           type="submit"
           disabled={loading !== null}
-          className="text-blue-600 hover:underline disabled:opacity-50 text-xs"
+          className="text-[var(--ff-red)] hover:underline disabled:opacity-50 text-xs"
         >
           {loading === 'resend' ? '...' : 'Rinvia invito'}
         </button>

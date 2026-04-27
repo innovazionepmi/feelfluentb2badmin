@@ -17,7 +17,6 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
-  // Conta le entità
   const { count: companiesCount } = await supabase
     .from('companies')
     .select('*', { count: 'exact', head: true })
@@ -43,103 +42,89 @@ export default async function DashboardPage() {
     redirect('/login')
   }
 
+  const kpis = [
+    { label: 'Aziende',       count: companiesCount,    href: '/admin/companies',    emoji: '🏢' },
+    { label: 'Programmi',     count: programsCount,     href: '/admin/programs',     emoji: '📋' },
+    { label: 'Partecipanti',  count: participantsCount, href: '/admin/participants', emoji: '👥' },
+    { label: 'Tutor',         count: tutorsCount,        href: '/admin/tutors',       emoji: '👩‍🏫' },
+  ]
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-[var(--ff-paper)]">
+
+      {/* Header */}
+      <header className="bg-white border-b border-[var(--ff-border)] shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">FeelFluent B2B Admin</h1>
-            <p className="text-sm text-gray-600">{profile?.full_name} - {profile?.role}</p>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[var(--ff-red)] flex items-center justify-center text-white font-bold text-sm">
+              FF
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-gray-900 leading-tight">FeelFluent B2B</h1>
+              <p className="text-xs text-[var(--ff-muted)]">{profile?.full_name} · {profile?.role}</p>
+            </div>
           </div>
           <form action={handleLogout}>
             <button
               type="submit"
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+              className="text-sm px-4 py-2 rounded-lg border border-[var(--ff-border)] text-gray-600 hover:bg-gray-100 transition font-medium"
             >
               Logout
             </button>
           </form>
         </div>
-
       </header>
+
       {profile?.role === 'admin' && <AdminNav />}
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Aziende</h3>
-            <p className="text-4xl font-bold text-blue-600 mb-4">{companiesCount || 0}</p>
-            <Link href="/admin/companies" className="text-blue-600 hover:underline text-sm">
-              Gestisci aziende
-            </Link>
-          </div>
+      <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Programmi</h3>
-            <p className="text-4xl font-bold text-green-600 mb-4">{programsCount || 0}</p>
-            <Link href="/admin/programs" className="text-blue-600 hover:underline text-sm">
-              Gestisci programmi
+        {/* KPI Cards */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {kpis.map(({ label, count, href, emoji }) => (
+            <Link key={href} href={href} className="group block bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-6 hover:border-[var(--ff-red-100)] hover:shadow-md transition-all">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm text-[var(--ff-muted)] font-medium mb-1">{label}</p>
+                  <p className="text-4xl font-bold text-gray-900">{count ?? 0}</p>
+                </div>
+                <span className="text-2xl">{emoji}</span>
+              </div>
+              <p className="text-xs text-[var(--ff-red)] font-semibold mt-4 group-hover:underline">
+                Gestisci →
+              </p>
             </Link>
-          </div>
+          ))}
+        </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Partecipanti</h3>
-            <p className="text-4xl font-bold text-purple-600 mb-4">{participantsCount || 0}</p>
-            <Link href="/admin/participants" className="text-blue-600 hover:underline text-sm">
-              Gestisci partecipanti
-            </Link>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Tutor</h3>
-            <p className="text-4xl font-bold text-orange-600 mb-4">{tutorsCount || 0}</p>
-            <Link href="/admin/tutors" className="text-blue-600 hover:underline text-sm">
-              Gestisci tutor
-            </Link>
+        {/* Azioni Rapide */}
+        <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-6">
+          <h2 className="text-base font-bold text-gray-900 mb-4">Azioni Rapide</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              { href: '/admin/companies/new',       icon: '🏢', label: 'Nuova Azienda' },
+              { href: '/admin/participants/new',     icon: '👤', label: 'Nuovo Partecipante' },
+              { href: '/admin/participants/import',  icon: '⬆', label: 'Importa CSV' },
+              { href: '/admin/users',                icon: '✅', label: 'Abilita Utenti' },
+            ].map(({ href, icon, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="border border-dashed border-[var(--ff-border)] rounded-lg p-5 hover:border-[var(--ff-red)] hover:bg-[var(--ff-red-50)] transition text-center group"
+              >
+                <div className="text-3xl mb-2">{icon}</div>
+                <p className="text-sm font-semibold text-gray-700 group-hover:text-[var(--ff-red)]">{label}</p>
+              </Link>
+            ))}
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Azioni Rapide</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            <Link
-              href="/admin/companies/new"
-              className="border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-blue-500 hover:bg-blue-50 transition text-center"
-            >
-              <div className="text-4xl mb-2">+</div>
-              <p className="font-medium text-gray-900">Nuova Azienda</p>
-            </Link>
-
-            <Link
-              href="/admin/participants/import"
-              className="border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-blue-500 hover:bg-blue-50 transition text-center"
-            >
-              <div className="text-4xl mb-2">↑</div>
-              <p className="font-medium text-gray-900">Importa Partecipanti CSV</p>
-            </Link>
-
-            <Link
-              href="/admin/tutors/new"
-              className="border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-purple-500 hover:bg-purple-50 transition text-center"
-            >
-              <div className="text-4xl mb-2">👩‍🏫</div>
-              <p className="font-medium text-gray-900">Nuovo Tutor</p>
-            </Link>
-
-            <Link
-              href="/admin/users"
-              className="border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-orange-500 hover:bg-orange-50 transition text-center"
-            >
-              <div className="text-4xl mb-2">✓</div>
-              <p className="font-medium text-gray-900">Abilita Utenti</p>
-            </Link>
-          </div>
+        {/* Welcome */}
+        <div className="bg-[var(--ff-red-50)] border border-[var(--ff-red-100)] rounded-xl p-6">
+          <h3 className="text-sm font-bold text-[var(--ff-red-700)] mb-1">Benvenuto!</h3>
+          <p className="text-sm text-gray-700">Sistema pronto. Inizia creando un&apos;azienda o importando partecipanti.</p>
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-blue-900 mb-2">Benvenuto!</h3>
-          <p className="text-blue-700">Sistema pronto. Inizia creando un azienda o importando partecipanti.</p>
-        </div>
       </main>
     </div>
   )

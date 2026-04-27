@@ -56,82 +56,52 @@ export default async function EditParticipantPage({ params }: { params: Promise<
     redirect('/admin/participants')
   }
 
+  const inputCls = "w-full px-4 py-2.5 border border-[var(--ff-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] text-sm"
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-[var(--ff-paper)]">
+      <header className="bg-white border-b border-[var(--ff-border)] shadow-sm">
         <div className="max-w-3xl mx-auto px-6 py-4">
-          <Link href="/admin/participants" className="text-blue-600 hover:underline text-sm block mb-2">
-            Torna ai partecipanti
+          <Link href="/admin/participants" className="text-xs text-[var(--ff-muted)] hover:text-gray-700 block mb-1">
+            ← Torna ai partecipanti
           </Link>
-          <h1 className="text-2xl font-bold">Modifica Partecipante</h1>
+          <h1 className="text-xl font-bold text-gray-900">Modifica Partecipante</h1>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-8">
-        <form action={updateParticipant} className="bg-white rounded-lg shadow p-6">
+        <form action={updateParticipant} className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-6">
           <input type="hidden" name="id" value={participant.id} />
-          
-          <div className="space-y-6">
+
+          <div className="space-y-5">
             <div>
-              <label htmlFor="full_name" className="block text-sm font-medium mb-2">
-                Nome Completo
-              </label>
-              <input
-                type="text"
-                id="full_name"
-                name="full_name"
-                defaultValue={participant.full_name}
-                required
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
+              <label htmlFor="full_name" className="block text-xs font-semibold text-gray-600 mb-1.5">Nome Completo</label>
+              <input type="text" id="full_name" name="full_name" defaultValue={participant.full_name} required className={inputCls} />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                defaultValue={participant.email}
-                required
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
+              <label htmlFor="email" className="block text-xs font-semibold text-gray-600 mb-1.5">Email</label>
+              <input type="email" id="email" name="email" defaultValue={participant.email} required className={inputCls} />
             </div>
 
             <div>
-              <label htmlFor="company_id" className="block text-sm font-medium mb-2">
-                Azienda
-              </label>
-              <select
-                id="company_id"
-                name="company_id"
-                defaultValue={participant.company_id || ''}
-                required
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              >
+              <label htmlFor="company_id" className="block text-xs font-semibold text-gray-600 mb-1.5">Azienda</label>
+              <select id="company_id" name="company_id" defaultValue={participant.company_id || ''} required className={inputCls}>
                 <option value="">-- Seleziona azienda --</option>
                 {companies?.map((company) => (
-                  <option key={company.id} value={company.id}>
-                    {company.name}
-                  </option>
+                  <option key={company.id} value={company.id}>{company.name}</option>
                 ))}
               </select>
             </div>
           </div>
 
-          <div className="mt-8 flex gap-4">
-            <button
-              type="submit"
-              className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold"
-            >
+          <div className="mt-6 flex gap-3">
+            <button type="submit"
+              className="flex-1 bg-[var(--ff-red)] hover:bg-[var(--ff-red-700)] text-white py-2.5 rounded-lg font-semibold text-sm transition">
               Salva Modifiche
             </button>
-            <Link
-              href="/admin/participants"
-              className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 font-semibold text-center leading-[48px]"
-            >
+            <Link href="/admin/participants"
+              className="flex-1 bg-white border border-[var(--ff-border)] text-gray-700 py-2.5 rounded-lg hover:bg-[var(--ff-paper)] font-medium text-sm text-center transition">
               Annulla
             </Link>
           </div>

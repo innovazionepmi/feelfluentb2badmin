@@ -169,7 +169,7 @@ export default function AvailabilityCalendar({ slots, onDeleteSlot }: Props) {
               {selectedSlot.is_recurring && (
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Ricorrenza</dt>
-                  <dd className="text-blue-600 font-medium">
+                  <dd className="text-[var(--ff-red)] font-medium">
                     {recurrenceLabel(selectedSlot.recurrence_rule)}
                   </dd>
                 </div>

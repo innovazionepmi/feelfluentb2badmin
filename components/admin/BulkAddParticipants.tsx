@@ -77,7 +77,7 @@ export default function BulkAddParticipants({ participants, addBulkParticipants 
           placeholder="Cerca per nome o email..."
           value={filter}
           onChange={e => setFilter(e.target.value)}
-          className="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]"
         />
       </div>
 
@@ -89,7 +89,7 @@ export default function BulkAddParticipants({ participants, addBulkParticipants 
             type="checkbox"
             checked={allFilteredSelected}
             onChange={toggleAll}
-            className="rounded border-gray-300 text-blue-600"
+            className="rounded border-gray-300 text-[var(--ff-red)]"
           />
           <span className="text-xs font-medium text-gray-600">
             {allFilteredSelected ? 'Deseleziona tutti' : 'Seleziona tutti'}
@@ -103,7 +103,7 @@ export default function BulkAddParticipants({ participants, addBulkParticipants 
           filtered.map(p => (
             <label
               key={p.id}
-              className={`flex items-start gap-3 px-3 py-2.5 cursor-pointer hover:bg-blue-50 border-b border-gray-100 last:border-0 transition-colors ${
+              className={`flex items-start gap-3 px-3 py-2.5 cursor-pointer hover:bg-[var(--ff-red-50)] border-b border-gray-100 last:border-0 transition-colors ${
                 selected.has(p.id) ? 'bg-blue-50' : ''
               }`}
             >
@@ -111,7 +111,7 @@ export default function BulkAddParticipants({ participants, addBulkParticipants 
                 type="checkbox"
                 checked={selected.has(p.id)}
                 onChange={() => toggle(p.id)}
-                className="rounded border-gray-300 text-blue-600 mt-0.5 flex-shrink-0"
+                className="rounded border-gray-300 text-[var(--ff-red)] mt-0.5 flex-shrink-0"
               />
               <div className="min-w-0">
                 <div className="text-sm font-medium text-gray-900 truncate">{p.full_name}</div>

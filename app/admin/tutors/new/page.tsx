@@ -64,7 +64,7 @@ export default async function NewTutorPage() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
         <div className="max-w-3xl mx-auto px-6 py-4">
-          <Link href="/admin/tutors" className="text-blue-600 hover:underline text-sm block mb-2">
+          <Link href="/admin/tutors" className="text-[var(--ff-red)] hover:underline text-sm block mb-2">
             Torna ai tutor
           </Link>
           <h1 className="text-2xl font-bold">Nuovo Tutor</h1>
@@ -83,7 +83,7 @@ export default async function NewTutorPage() {
               id="full_name"
               name="full_name"
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]"
               placeholder="Mario Rossi"
             />
           </div>
@@ -97,7 +97,7 @@ export default async function NewTutorPage() {
               id="email"
               name="email"
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]"
               placeholder="tutor@example.com"
             />
             <p className="text-xs text-gray-500 mt-1">
@@ -113,7 +113,7 @@ export default async function NewTutorPage() {
               type="url"
               id="personal_room_link"
               name="personal_room_link"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]"
               placeholder="https://meet.google.com/xxx-yyyy-zzz"
             />
           </div>
@@ -129,7 +129,7 @@ export default async function NewTutorPage() {
                     type="checkbox"
                     name="languages"
                     value={lang}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-gray-300 text-[var(--ff-red)] focus:ring-[var(--ff-red)]"
                   />
                   <span className="text-sm text-gray-700">{lang}</span>
                 </label>
@@ -140,7 +140,7 @@ export default async function NewTutorPage() {
           <div className="flex gap-4 pt-2">
             <button
               type="submit"
-              className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+              className="flex-1 bg-[var(--ff-red)] text-white py-3 rounded-lg hover:bg-[var(--ff-red-700)] transition font-medium"
             >
               Crea Tutor e invia invito
             </button>

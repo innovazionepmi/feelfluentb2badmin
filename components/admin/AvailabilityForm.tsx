@@ -64,7 +64,7 @@ export default function AvailabilityForm({ tutorId, addAvailability }: Props) {
             min={today}
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] text-sm"
           />
         </div>
 
@@ -78,7 +78,7 @@ export default function AvailabilityForm({ tutorId, addAvailability }: Props) {
             name="start_time"
             required
             step="900"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] text-sm"
           />
         </div>
 
@@ -92,7 +92,7 @@ export default function AvailabilityForm({ tutorId, addAvailability }: Props) {
             name="end_time"
             required
             step="900"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] text-sm"
           />
         </div>
       </div>
@@ -104,7 +104,7 @@ export default function AvailabilityForm({ tutorId, addAvailability }: Props) {
         <select
           id="availability_type"
           name="availability_type"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] text-sm"
         >
           <option value="both">Level check e sessioni gruppo</option>
           <option value="level_check">Solo Level Check</option>
@@ -119,7 +119,7 @@ export default function AvailabilityForm({ tutorId, addAvailability }: Props) {
             type="checkbox"
             checked={isRecurring}
             onChange={(e) => setIsRecurring(e.target.checked)}
-            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="rounded border-gray-300 text-[var(--ff-red)] focus:ring-[var(--ff-red)]"
           />
           <span className="text-sm font-medium text-gray-700">Disponibilità ricorrente</span>
         </label>
@@ -141,12 +141,12 @@ export default function AvailabilityForm({ tutorId, addAvailability }: Props) {
                   value="weekly"
                   checked={recurrenceType === 'weekly'}
                   onChange={() => setRecurrenceType('weekly')}
-                  className="text-blue-600"
+                  className="text-[var(--ff-red)]"
                 />
                 <span className="text-sm text-gray-700">
                   Ogni settimana
                   {selectedDayName && recurrenceType === 'weekly' && (
-                    <span className="ml-1 text-blue-600 font-medium">(ogni {selectedDayName})</span>
+                    <span className="ml-1 text-[var(--ff-red)] font-medium">(ogni {selectedDayName})</span>
                   )}
                 </span>
               </label>
@@ -157,7 +157,7 @@ export default function AvailabilityForm({ tutorId, addAvailability }: Props) {
                   value="monthly"
                   checked={recurrenceType === 'monthly'}
                   onChange={() => setRecurrenceType('monthly')}
-                  className="text-blue-600"
+                  className="text-[var(--ff-red)]"
                 />
                 <span className="text-sm text-gray-700">Ogni mese (stesso giorno)</span>
               </label>
@@ -177,7 +177,7 @@ export default function AvailabilityForm({ tutorId, addAvailability }: Props) {
               name="recurrence_end_date"
               required={isRecurring}
               min={selectedDate || today}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] text-sm bg-white"
             />
           </div>
         </div>
@@ -186,7 +186,7 @@ export default function AvailabilityForm({ tutorId, addAvailability }: Props) {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-[var(--ff-red)] text-white py-2.5 rounded-lg hover:bg-[var(--ff-red-700)] transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {submitting ? 'Salvataggio...' : 'Aggiungi disponibilità'}
       </button>

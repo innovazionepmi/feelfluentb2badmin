@@ -46,61 +46,43 @@ export default async function NewParticipantPage() {
     redirect('/admin/participants')
   }
 
+  const inputCls = "w-full px-4 py-2.5 border border-[var(--ff-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] text-sm"
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-[var(--ff-paper)]">
+      <header className="bg-white border-b border-[var(--ff-border)] shadow-sm">
         <div className="max-w-3xl mx-auto px-6 py-4">
-          <Link href="/admin/participants" className="text-blue-600 hover:underline text-sm block mb-2">
+          <Link href="/admin/participants" className="text-xs text-[var(--ff-muted)] hover:text-gray-700 block mb-1">
             ← Torna ai partecipanti
           </Link>
-          <h1 className="text-2xl font-bold">Nuovo Partecipante</h1>
+          <h1 className="text-xl font-bold text-gray-900">Nuovo Partecipante</h1>
         </div>
       </header>
       <AdminNav />
 
       <main className="max-w-3xl mx-auto px-6 py-8">
-        <form action={createParticipant} className="bg-white rounded-lg shadow p-6 space-y-5">
+        <form action={createParticipant} className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-6 space-y-5">
 
           <div>
-            <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-1">
-              Nome completo <span className="text-red-500">*</span>
+            <label htmlFor="full_name" className="block text-xs font-semibold text-gray-600 mb-1.5">
+              Nome completo <span className="text-[var(--ff-red)]">*</span>
             </label>
-            <input
-              type="text"
-              id="full_name"
-              name="full_name"
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Mario Rossi"
-            />
+            <input type="text" id="full_name" name="full_name" required className={inputCls} placeholder="Mario Rossi" />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email <span className="text-red-500">*</span>
+            <label htmlFor="email" className="block text-xs font-semibold text-gray-600 mb-1.5">
+              Email <span className="text-[var(--ff-red)]">*</span>
             </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="mario.rossi@azienda.it"
-            />
-            <p className="text-xs text-gray-500 mt-1">
+            <input type="email" id="email" name="email" required className={inputCls} placeholder="mario.rossi@azienda.it" />
+            <p className="text-xs text-[var(--ff-muted)] mt-1">
               Verrà inviata un&apos;email di invito per impostare la password.
             </p>
           </div>
 
           <div>
-            <label htmlFor="company_id" className="block text-sm font-medium text-gray-700 mb-1">
-              Azienda
-            </label>
-            <select
-              id="company_id"
-              name="company_id"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
+            <label htmlFor="company_id" className="block text-xs font-semibold text-gray-600 mb-1.5">Azienda</label>
+            <select id="company_id" name="company_id" className={inputCls}>
               <option value="">— Nessuna azienda —</option>
               {(companies || []).map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
@@ -108,17 +90,13 @@ export default async function NewParticipantPage() {
             </select>
           </div>
 
-          <div className="flex gap-4 pt-2">
-            <button
-              type="submit"
-              className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-medium"
-            >
+          <div className="flex gap-3 pt-2">
+            <button type="submit"
+              className="flex-1 bg-[var(--ff-red)] hover:bg-[var(--ff-red-700)] text-white py-2.5 rounded-lg transition font-semibold text-sm">
               Crea e invia invito
             </button>
-            <Link
-              href="/admin/participants"
-              className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition text-center font-medium"
-            >
+            <Link href="/admin/participants"
+              className="flex-1 bg-white border border-[var(--ff-border)] text-gray-700 py-2.5 rounded-lg hover:bg-[var(--ff-paper)] transition text-center font-medium text-sm">
               Annulla
             </Link>
           </div>

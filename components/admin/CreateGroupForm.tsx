@@ -48,7 +48,7 @@ export default function CreateGroupForm({ levelLabels, tutors, createGroup }: Pr
           placeholder="es. Gruppo B1 - Mattina"
           required
           disabled={isPending}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] disabled:opacity-50"
         />
       </div>
 
@@ -59,7 +59,7 @@ export default function CreateGroupForm({ levelLabels, tutors, createGroup }: Pr
           onChange={e => setLevel(e.target.value)}
           required
           disabled={isPending}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] disabled:opacity-50"
         >
           <option value="">— Seleziona livello —</option>
           {levelLabels.map(lvl => (
@@ -74,7 +74,7 @@ export default function CreateGroupForm({ levelLabels, tutors, createGroup }: Pr
           value={tutorId}
           onChange={e => setTutorId(e.target.value)}
           disabled={isPending}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] disabled:opacity-50"
         >
           <option value="">— Nessun tutor —</option>
           {tutors.map(t => (
@@ -89,7 +89,7 @@ export default function CreateGroupForm({ levelLabels, tutors, createGroup }: Pr
       <button
         type="submit"
         disabled={!name.trim() || !level || isPending}
-        className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-full bg-[var(--ff-red)] text-white py-2 rounded-lg hover:bg-[var(--ff-red-700)] transition text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {isPending ? 'Creazione...' : 'Crea gruppo'}
       </button>

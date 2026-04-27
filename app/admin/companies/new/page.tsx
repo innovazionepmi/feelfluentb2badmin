@@ -35,10 +35,10 @@ export default async function NewCompanyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-[var(--ff-paper)]">
+      <header className="bg-white border-b border-[var(--ff-border)] shadow-sm">
         <div className="max-w-3xl mx-auto px-6 py-4">
-          <Link href="/admin/companies" className="text-blue-600 hover:underline text-sm block mb-2">
+          <Link href="/admin/companies" className="text-xs text-[var(--ff-muted)] hover:text-gray-700 block mb-1">
             Torna alle aziende
           </Link>
           <h1 className="text-2xl font-bold">Nuova Azienda</h1>
@@ -46,7 +46,7 @@ export default async function NewCompanyPage() {
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-8">
-        <form action={createCompany} className="bg-white rounded-lg shadow p-6">
+        <form action={createCompany} className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-6">
           <div className="mb-4">
             <label htmlFor="name" className="block text-sm font-medium mb-2">
               Nome Azienda
@@ -102,7 +102,7 @@ export default async function NewCompanyPage() {
           <div className="flex gap-4">
             <button
               type="submit"
-              className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
+              className="flex-1 bg-[var(--ff-red)] text-white py-2.5 rounded-lg hover:bg-[var(--ff-red-700)]"
             >
               Crea Azienda
             </button>

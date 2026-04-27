@@ -65,10 +65,10 @@ export default async function EditTutorPage({ params }: Props) {
   const currentLanguages: string[] = tutor.languages || []
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-[var(--ff-paper)]">
+      <header className="bg-white border-b border-[var(--ff-border)] shadow-sm">
         <div className="max-w-3xl mx-auto px-6 py-4">
-          <Link href="/admin/tutors" className="text-blue-600 hover:underline text-sm block mb-2">
+          <Link href="/admin/tutors" className="text-[var(--ff-red)] hover:underline text-sm block mb-2">
             Torna ai tutor
           </Link>
           <h1 className="text-2xl font-bold">Modifica Tutor</h1>
@@ -89,7 +89,7 @@ export default async function EditTutorPage({ params }: Props) {
               name="full_name"
               required
               defaultValue={tutor.full_name}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]"
             />
           </div>
 
@@ -115,7 +115,7 @@ export default async function EditTutorPage({ params }: Props) {
               id="personal_room_link"
               name="personal_room_link"
               defaultValue={tutor.personal_room_link || ''}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]"
               placeholder="https://meet.google.com/xxx-yyyy-zzz"
             />
           </div>
@@ -132,7 +132,7 @@ export default async function EditTutorPage({ params }: Props) {
                     name="languages"
                     value={lang}
                     defaultChecked={currentLanguages.includes(lang)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-gray-300 text-[var(--ff-red)] focus:ring-[var(--ff-red)]"
                   />
                   <span className="text-sm text-gray-700">{lang}</span>
                 </label>
@@ -152,7 +152,7 @@ export default async function EditTutorPage({ params }: Props) {
           <div className="flex gap-4 pt-2">
             <button
               type="submit"
-              className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+              className="flex-1 bg-[var(--ff-red)] hover:bg-[var(--ff-red-700)] text-white py-2.5 rounded-lg transition font-semibold text-sm"
             >
               Salva modifiche
             </button>

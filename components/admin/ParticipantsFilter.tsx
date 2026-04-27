@@ -53,7 +53,7 @@ export default function ParticipantsFilter({ companies, programs, selectedCompan
         <select
           value={selectedCompany}
           onChange={e => update('company_id', e.target.value)}
-          className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] bg-white"
         >
           <option value="">Tutte</option>
           {companies.map(c => (
@@ -68,7 +68,7 @@ export default function ParticipantsFilter({ companies, programs, selectedCompan
           value={selectedProgram}
           onChange={e => update('program_id', e.target.value)}
           disabled={filteredPrograms.length === 0}
-          className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:opacity-50"
+          className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] bg-white disabled:opacity-50"
         >
           <option value="">Tutti</option>
           {filteredPrograms.map(p => (

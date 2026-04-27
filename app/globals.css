@@ -1,26 +1,70 @@
 @import "tailwindcss";
 
+/* ─── Feel Fluent Design Tokens ─────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand */
+  --ff-red:        #DA2128;
+  --ff-red-50:     #FFF0F0;
+  --ff-red-100:    #FFD6D7;
+  --ff-red-700:    #B01920;
+
+  /* Neutrals */
+  --ff-paper:      #FAFAF7;
+  --ff-card:       #FFFFFF;
+  --ff-border:     #E8E8E4;
+  --ff-text:       #1A1A1A;
+  --ff-muted:      #6B7280;
+
+  /* Type */
+  --ff-font:       "Nunito", system-ui, sans-serif;
+
+  /* Radius */
+  --ff-radius-sm:  6px;
+  --ff-radius:     10px;
+  --ff-radius-lg:  16px;
+
+  /* Shadow */
+  --ff-shadow-sm:  0 1px 3px rgba(0,0,0,.08);
+  --ff-shadow:     0 2px 8px rgba(0,0,0,.10);
+  --ff-shadow-lg:  0 4px 20px rgba(0,0,0,.12);
 }
 
+/* ─── Tailwind theme extension ───────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--ff-paper);
+  --color-foreground: var(--ff-text);
+  --color-ff-red:     var(--ff-red);
+  --color-ff-paper:   var(--ff-paper);
+  --color-ff-card:    var(--ff-card);
+  --color-ff-border:  var(--ff-border);
+  --color-ff-muted:   var(--ff-muted);
+  --font-sans:        var(--ff-font);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ─── Base ───────────────────────────────────────────────────────── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ff-paper);
+  color: var(--ff-text);
+  font-family: var(--ff-font);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Brand button helpers ───────────────────────────────────────── */
+.btn-primary {
+  background: var(--ff-red);
+  color: #fff;
+  border-radius: var(--ff-radius);
+  font-weight: 600;
+  transition: background .15s;
+}
+.btn-primary:hover {
+  background: var(--ff-red-700);
+}
+
+/* ─── Card helper ────────────────────────────────────────────────── */
+.ff-card {
+  background: var(--ff-card);
+  border: 1px solid var(--ff-border);
+  border-radius: var(--ff-radius);
+  box-shadow: var(--ff-shadow-sm);
 }

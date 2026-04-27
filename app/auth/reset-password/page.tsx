@@ -88,7 +88,7 @@ export default function ResetPasswordPage() {
             <div className="text-center space-y-4">
               <div className="text-red-500 text-4xl">✕</div>
               <p className="text-red-700 font-medium text-sm">{sessionError}</p>
-              <a href="/login/forgot-password" className="block text-sm text-blue-600 hover:underline mt-2">
+              <a href="/login/forgot-password" className="block text-sm text-[var(--ff-red)] hover:underline mt-2">
                 Richiedi un nuovo link
               </a>
             </div>
@@ -109,7 +109,7 @@ export default function ResetPasswordPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={8}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--ff-red)] focus:border-transparent"
                   placeholder="Minimo 8 caratteri"
                 />
               </div>
@@ -124,7 +124,7 @@ export default function ResetPasswordPage() {
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--ff-red)] focus:border-transparent"
                   placeholder="••••••••"
                 />
               </div>
@@ -138,7 +138,7 @@ export default function ResetPasswordPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold"
+                className="w-full bg-[var(--ff-red)] text-white py-3 rounded-lg hover:bg-[var(--ff-red-700)] disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold"
               >
                 {loading ? 'Salvataggio...' : 'Salva nuova password'}
               </button>

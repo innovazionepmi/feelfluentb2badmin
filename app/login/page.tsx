@@ -13,14 +13,18 @@ export default async function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--ff-paper)]">
+      <div className="max-w-sm w-full px-4">
+
+        {/* Logo mark */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            FeelFluent B2B
-          </h1>
-          <p className="text-gray-600">Management System</p>
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[var(--ff-red)] text-white font-bold text-xl mb-4 shadow-lg">
+            FF
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900">FeelFluent B2B</h1>
+          <p className="text-sm text-[var(--ff-muted)] mt-1">Accedi al pannello di gestione</p>
         </div>
+
         <LoginForm />
       </div>
     </div>

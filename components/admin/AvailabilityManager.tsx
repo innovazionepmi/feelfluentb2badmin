@@ -57,13 +57,13 @@ export default function AvailabilityManager({ initialSlots, tutorId, deleteAvail
         <div className="flex rounded-lg border border-gray-200 overflow-hidden text-sm">
           <button
             onClick={() => setView('list')}
-            className={`px-4 py-1.5 transition ${view === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+            className={`px-4 py-1.5 transition ${view === 'list' ? 'bg-[var(--ff-red)] text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
           >
             📋 Lista
           </button>
           <button
             onClick={() => setView('calendar')}
-            className={`px-4 py-1.5 transition ${view === 'calendar' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+            className={`px-4 py-1.5 transition ${view === 'calendar' ? 'bg-[var(--ff-red)] text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
           >
             📅 Calendario
           </button>
@@ -112,7 +112,7 @@ export default function AvailabilityManager({ initialSlots, tutorId, deleteAvail
                   </td>
                   <td className="px-5 py-3 text-sm text-gray-600">
                     {slot.is_recurring ? (
-                      <span className="text-blue-600 text-xs font-medium">
+                      <span className="text-[var(--ff-red)] text-xs font-medium">
                         ↻ {recurrenceLabel(slot.recurrence_rule)}
                       </span>
                     ) : (

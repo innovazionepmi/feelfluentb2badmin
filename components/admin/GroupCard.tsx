@@ -138,12 +138,12 @@ export default function GroupCard({
                   if (e.key === 'Escape') { setIsEditingName(false); setEditName(group.name) }
                 }}
                 autoFocus
-                className="flex-1 px-2 py-1 border border-blue-400 rounded text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-2 py-1 border border-[var(--ff-red)] rounded text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]"
               />
               <button
                 onClick={handleSaveName}
                 disabled={isPending}
-                className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                className="text-xs text-[var(--ff-red)] hover:text-blue-800 font-medium"
               >
                 Salva
               </button>

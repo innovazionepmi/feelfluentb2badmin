@@ -30,7 +30,7 @@ export default function TutorActions({
     <div className="text-sm flex items-center gap-3">
       <form action={sendInvite} className="inline">
         <input type="hidden" name="email" value={tutorEmail} />
-        <button type="submit" className="text-blue-600 hover:underline">
+        <button type="submit" className="text-[var(--ff-red)] hover:underline">
           Invia invito
         </button>
       </form>

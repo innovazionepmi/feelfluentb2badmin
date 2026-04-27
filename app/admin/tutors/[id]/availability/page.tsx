@@ -159,8 +159,8 @@ export default async function TutorAvailabilityPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-[var(--ff-paper)]">
+      <header className="bg-white border-b border-[var(--ff-border)] shadow-sm">
         <div className="max-w-6xl mx-auto px-6 py-4">
           <h1 className="text-2xl font-bold">Disponibilità: {tutor.full_name}</h1>
           <p className="text-sm text-gray-500 mt-1">{tutor.email}</p>

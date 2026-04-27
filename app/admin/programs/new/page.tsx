@@ -62,8 +62,8 @@ export default async function NewProgramPage() {
   const today = new Date().toISOString().split('T')[0]
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-[var(--ff-paper)]">
+      <header className="bg-white border-b border-[var(--ff-border)] shadow-sm">
         <div className="max-w-3xl mx-auto px-6 py-4">
           <h1 className="text-2xl font-bold text-gray-900">Nuovo Programma Formativo</h1>
         </div>
@@ -71,7 +71,7 @@ export default async function NewProgramPage() {
       <AdminNav />
 
       <main className="max-w-3xl mx-auto px-6 py-8">
-        <form action={createProgram} className="bg-white rounded-lg shadow p-6 space-y-5">
+        <form action={createProgram} className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-6 space-y-5">
 
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -82,7 +82,7 @@ export default async function NewProgramPage() {
               id="name"
               name="name"
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]"
               placeholder="es. Business English - Acme 2025"
             />
           </div>
@@ -96,7 +96,7 @@ export default async function NewProgramPage() {
                 id="company_id"
                 name="company_id"
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]"
               >
                 <option value="">— Seleziona azienda —</option>
                 {companies.map(c => (
@@ -121,7 +121,7 @@ export default async function NewProgramPage() {
               id="description"
               name="description"
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] resize-none"
               placeholder="Note sul programma, obiettivi, ecc."
             />
           </div>
@@ -137,7 +137,7 @@ export default async function NewProgramPage() {
                 name="start_date"
                 required
                 min={today}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]"
               />
             </div>
             <div>
@@ -148,7 +148,7 @@ export default async function NewProgramPage() {
                 type="date"
                 id="end_date"
                 name="end_date"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)]"
               />
             </div>
           </div>
@@ -161,7 +161,7 @@ export default async function NewProgramPage() {
           <div className="flex gap-4 pt-2">
             <button
               type="submit"
-              className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+              className="flex-1 bg-[var(--ff-red)] text-white py-2.5 rounded-lg hover:bg-[var(--ff-red-700)] transition font-semibold text-sm"
             >
               Crea Programma
             </button>

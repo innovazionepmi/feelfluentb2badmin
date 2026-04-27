@@ -254,19 +254,19 @@ export default async function ProgramConversationsPage({ params }: Props) {
   const totalCancelled = convList.filter(c => c.status === 'cancelled').length
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-[var(--ff-paper)]">
+      <header className="bg-white border-b border-[var(--ff-border)] shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center gap-2 text-sm text-gray-400">
+          <div className="flex items-center gap-2 text-xs text-[var(--ff-muted)]">
             <Link href="/admin/programs" className="hover:text-gray-600">Programmi</Link>
             <span>/</span>
             <Link href={`/admin/programs/${programId}`} className="hover:text-gray-600">{program.name}</Link>
             <span>/</span>
-            <span className="text-gray-700 font-medium">Conversazioni</span>
+            <span className="text-gray-700 font-semibold">Conversazioni</span>
           </div>
           <div className="mt-1">
-            <h1 className="text-2xl font-bold text-gray-900">Conversazioni</h1>
-            <p className="text-sm text-gray-500 mt-0.5">{program.name} · {program.companies?.name}</p>
+            <h1 className="text-xl font-bold text-gray-900">Conversazioni</h1>
+            <p className="text-xs text-[var(--ff-muted)] mt-0.5">{program.name} · {(program.companies as any)?.name}</p>
           </div>
         </div>
       </header>
@@ -276,21 +276,21 @@ export default async function ProgramConversationsPage({ params }: Props) {
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg shadow p-4 text-center">
-            <div className="text-3xl font-bold text-gray-700">{convList.length}</div>
-            <div className="text-xs text-gray-500 mt-1">Totale</div>
+          <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center">
+            <div className="text-3xl font-bold text-gray-800">{convList.length}</div>
+            <div className="text-xs text-[var(--ff-muted)] mt-1">Totale</div>
           </div>
-          <div className="bg-white rounded-lg shadow p-4 text-center">
-            <div className="text-3xl font-bold text-blue-600">{totalScheduled}</div>
-            <div className="text-xs text-gray-500 mt-1">Programmate</div>
+          <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center">
+            <div className="text-3xl font-bold text-[var(--ff-red)]">{totalScheduled}</div>
+            <div className="text-xs text-[var(--ff-muted)] mt-1">Programmate</div>
           </div>
-          <div className="bg-white rounded-lg shadow p-4 text-center">
+          <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center">
             <div className="text-3xl font-bold text-green-600">{totalCompleted}</div>
-            <div className="text-xs text-gray-500 mt-1">Completate</div>
+            <div className="text-xs text-[var(--ff-muted)] mt-1">Completate</div>
           </div>
-          <div className="bg-white rounded-lg shadow p-4 text-center">
-            <div className="text-3xl font-bold text-red-400">{totalCancelled}</div>
-            <div className="text-xs text-gray-500 mt-1">Annullate</div>
+          <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center">
+            <div className="text-3xl font-bold text-gray-400">{totalCancelled}</div>
+            <div className="text-xs text-[var(--ff-muted)] mt-1">Annullate</div>
           </div>
         </div>
 
@@ -298,14 +298,14 @@ export default async function ProgramConversationsPage({ params }: Props) {
 
           {/* Colonna sinistra: crea conversazione */}
           <div className="lg:col-span-1">
-            <details className="bg-white rounded-lg shadow" open>
-              <summary className="px-6 py-4 font-semibold text-gray-900 cursor-pointer select-none">
+            <details className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm" open>
+              <summary className="px-6 py-4 font-semibold text-gray-900 cursor-pointer select-none text-sm">
                 + Nuova conversazione
               </summary>
-              <div className="px-6 pb-6 border-t pt-4">
+              <div className="px-6 pb-6 border-t border-[var(--ff-border)] pt-4">
                 {groupsFormatted.length === 0 ? (
                   <p className="text-sm text-gray-400 italic">
-                    Nessun gruppo creato. <Link href={`/admin/programs/${programId}/groups`} className="text-blue-600 hover:underline">Crea i gruppi prima.</Link>
+                    Nessun gruppo creato. <Link href={`/admin/programs/${programId}/groups`} className="text-[var(--ff-red)] hover:underline">Crea i gruppi prima.</Link>
                   </p>
                 ) : (
                   <CreateConversationForm
@@ -322,7 +322,7 @@ export default async function ProgramConversationsPage({ params }: Props) {
           {/* Colonna destra: lista conversazioni */}
           <div className="lg:col-span-2 space-y-4">
             {convList.length === 0 ? (
-              <div className="bg-white rounded-lg shadow p-10 text-center text-gray-400">
+              <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-10 text-center text-[var(--ff-muted)]">
                 <p className="text-lg font-medium mb-1">Nessuna conversazione</p>
                 <p className="text-sm">Usa il pannello a sinistra per crearne una.</p>
               </div>

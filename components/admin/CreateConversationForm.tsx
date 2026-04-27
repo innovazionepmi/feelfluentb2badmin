@@ -24,7 +24,6 @@ interface Props {
 }
 
 const DURATIONS = [30, 45, 60, 90]
-
 const DAY_NAMES_IT = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato']
 
 function addMinutes(time: string, minutes: number): string {
@@ -46,6 +45,9 @@ function countWeeklyOccurrences(startDate: string, endDate: string): number {
   }
   return count
 }
+
+const inputCls = "w-full px-3 py-2 border border-[var(--ff-border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] bg-white"
+const labelCls = "block text-xs font-semibold text-gray-600 mb-1"
 
 export default function CreateConversationForm({ groups, tutors, programEndDate, createConversation }: Props) {
   const [selectedGroupId, setSelectedGroupId] = useState('')
@@ -114,14 +116,8 @@ export default function CreateConversationForm({ groups, tutors, programEndDate,
     <form onSubmit={handleSubmit} className="space-y-4">
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Gruppo</label>
-        <select
-          name="group_id"
-          required
-          value={selectedGroupId}
-          onChange={e => handleGroupChange(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
+        <label className={labelCls}>Gruppo</label>
+        <select name="group_id" required value={selectedGroupId} onChange={e => handleGroupChange(e.target.value)} className={inputCls}>
           <option value="">— Seleziona gruppo —</option>
           {groups.map(g => (
             <option key={g.id} value={g.id}>{g.level} · {g.name}</option>
@@ -130,14 +126,8 @@ export default function CreateConversationForm({ groups, tutors, programEndDate,
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Tutor</label>
-        <select
-          name="tutor_id"
-          required
-          value={selectedTutorId}
-          onChange={e => handleTutorChange(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
+        <label className={labelCls}>Tutor</label>
+        <select name="tutor_id" required value={selectedTutorId} onChange={e => handleTutorChange(e.target.value)} className={inputCls}>
           <option value="">— Seleziona tutor —</option>
           {tutors.map(t => (
             <option key={t.id} value={t.id}>{t.full_name}</option>
@@ -147,102 +137,76 @@ export default function CreateConversationForm({ groups, tutors, programEndDate,
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
-            {isRecurring ? 'Prima data' : 'Data'}
-          </label>
-          <input
-            type="date"
-            name="scheduled_date"
-            required
-            value={scheduledDate}
-            onChange={e => setScheduledDate(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <label className={labelCls}>{isRecurring ? 'Prima data' : 'Data'}</label>
+          <input type="date" name="scheduled_date" required value={scheduledDate}
+            onChange={e => setScheduledDate(e.target.value)} className={inputCls} />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Ora inizio</label>
-          <input
-            type="time"
-            name="start_time"
-            required
-            value={startTime}
-            onChange={e => setStartTime(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <label className={labelCls}>Ora inizio</label>
+          <input type="time" name="start_time" required value={startTime}
+            onChange={e => setStartTime(e.target.value)} className={inputCls} />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Durata</label>
+        <label className={labelCls}>Durata</label>
         <div className="flex gap-2">
           {DURATIONS.map(d => (
             <button
               key={d}
               type="button"
               onClick={() => setDuration(d)}
-              className={`flex-1 py-1.5 text-sm rounded-lg border transition ${
+              className={`flex-1 py-1.5 text-sm rounded-lg border font-semibold transition ${
                 duration === d
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+                  ? 'bg-[var(--ff-red)] text-white border-[var(--ff-red)]'
+                  : 'bg-white text-gray-700 border-[var(--ff-border)] hover:border-[var(--ff-red)]'
               }`}
             >
-              {d}'
+              {d}&apos;
             </button>
           ))}
         </div>
         <input type="hidden" name="duration_minutes" value={duration} />
-        <p className="text-xs text-gray-400 mt-1">Fine prevista: {endTime}</p>
+        <p className="text-xs text-[var(--ff-muted)] mt-1">Fine prevista: {endTime}</p>
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Link meeting</label>
-        <input
-          type="url"
-          name="meeting_link"
-          required
-          value={meetingLink}
+        <label className={labelCls}>Link meeting</label>
+        <input type="url" name="meeting_link" required value={meetingLink}
           onChange={e => setMeetingLink(e.target.value)}
           placeholder="https://meet.google.com/..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+          className={inputCls} />
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1">Note (opzionale)</label>
-        <textarea
-          name="notes"
-          rows={2}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-        />
+        <label className={labelCls}>Note (opzionale)</label>
+        <textarea name="notes" rows={2} className={`${inputCls} resize-none`} />
       </div>
 
       {/* Toggle ricorrente */}
-      <div className="border-t pt-4">
+      <div className="border-t border-[var(--ff-border)] pt-4">
         <label className="flex items-center gap-2 cursor-pointer select-none">
           <div
             onClick={() => setIsRecurring(!isRecurring)}
-            className={`relative w-10 h-5 rounded-full transition-colors ${isRecurring ? 'bg-blue-600' : 'bg-gray-300'}`}
+            className={`relative w-10 h-5 rounded-full transition-colors ${isRecurring ? 'bg-[var(--ff-red)]' : 'bg-gray-300'}`}
           >
             <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${isRecurring ? 'translate-x-5' : ''}`} />
           </div>
-          <span className="text-sm font-medium text-gray-700">Ricorrente (settimanale)</span>
+          <span className="text-sm font-semibold text-gray-700">Ricorrente (settimanale)</span>
         </label>
 
         {isRecurring && (
           <div className="mt-3 space-y-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Ultima data</label>
-              <input
-                type="date"
-                value={recurrenceEndDate}
+              <label className={labelCls}>Ultima data</label>
+              <input type="date" value={recurrenceEndDate}
                 onChange={e => setRecurrenceEndDate(e.target.value)}
                 min={scheduledDate || undefined}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+                className={inputCls} />
             </div>
 
             {scheduledDate && recurrenceEndDate && occurrenceCount > 0 && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs text-blue-700">
+              <div className="bg-[var(--ff-red-50)] border border-[var(--ff-red-100)] rounded-lg px-3 py-2 text-xs text-[var(--ff-red-700)]">
                 Verranno create <strong>{occurrenceCount} conversazioni</strong>
                 {dayName && <>, ogni <strong>{dayName}</strong></>}
                 , dalle <strong>{startTime}</strong> alle <strong>{endTime}</strong>
@@ -250,7 +214,7 @@ export default function CreateConversationForm({ groups, tutors, programEndDate,
             )}
 
             {scheduledDate && recurrenceEndDate && occurrenceCount === 0 && (
-              <p className="text-xs text-red-500">La data di fine è precedente alla data di inizio.</p>
+              <p className="text-xs text-[var(--ff-red)]">La data di fine è precedente alla data di inizio.</p>
             )}
           </div>
         )}
@@ -259,7 +223,7 @@ export default function CreateConversationForm({ groups, tutors, programEndDate,
       <button
         type="submit"
         disabled={submitting || (isRecurring && occurrenceCount === 0)}
-        className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium disabled:opacity-50"
+        className="w-full bg-[var(--ff-red)] hover:bg-[var(--ff-red-700)] text-white py-2.5 rounded-lg transition text-sm font-bold disabled:opacity-50"
       >
         {submitting
           ? 'Salvataggio...'

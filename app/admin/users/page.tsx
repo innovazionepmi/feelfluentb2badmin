@@ -78,14 +78,11 @@ export default async function UsersManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-[var(--ff-paper)]">
+      <header className="bg-white border-b border-[var(--ff-border)] shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <Link href="/dashboard" className="text-blue-600 hover:underline text-sm block mb-2">
-            Dashboard
-          </Link>
-          <h1 className="text-2xl font-bold">Gestione Utenti</h1>
-          <p className="text-sm text-gray-500 mt-1">Abilita manualmente gli utenti che non hanno confermato l&apos;email</p>
+          <h1 className="text-xl font-bold text-gray-900">Abilita Utenti</h1>
+          <p className="text-xs text-[var(--ff-muted)] mt-0.5">Abilita manualmente gli utenti che non hanno confermato l&apos;email</p>
         </div>
       </header>
       <AdminNav />
@@ -94,26 +91,26 @@ export default async function UsersManagementPage() {
 
         {/* Sezione: utenti da confermare */}
         {unconfirmed.length > 0 && (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="px-6 py-4 border-b bg-orange-50 flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-orange-400 inline-block"></span>
-              <h2 className="text-lg font-semibold text-orange-900">
+          <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-[var(--ff-border)] bg-orange-50 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-orange-400 inline-block"></span>
+              <h2 className="text-sm font-bold text-orange-900">
                 In attesa di conferma ({unconfirmed.length})
               </h2>
             </div>
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-[var(--ff-border)]">
+              <thead className="bg-[var(--ff-paper)]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ruolo</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Invitato il</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Azioni</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Nome</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Email</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Ruolo</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Invitato il</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Azioni</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-[var(--ff-border)]">
                 {unconfirmed.map((u) => (
-                  <tr key={u.id} className="hover:bg-gray-50">
+                  <tr key={u.id} className="hover:bg-[var(--ff-paper)] transition-colors">
                     <td className="px-6 py-3 text-sm font-medium text-gray-900">
                       {u.profile?.full_name || u.user_metadata?.full_name || '-'}
                     </td>
@@ -152,48 +149,48 @@ export default async function UsersManagementPage() {
         )}
 
         {/* Sezione: tutti gli utenti confermati */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-green-400 inline-block"></span>
-            <h2 className="text-lg font-semibold text-gray-900">
+        <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-[var(--ff-border)] flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-green-400 inline-block"></span>
+            <h2 className="text-sm font-bold text-gray-900">
               Utenti attivi ({confirmed.length})
             </h2>
           </div>
           {confirmed.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">Nessun utente confermato.</div>
+            <div className="p-8 text-center text-[var(--ff-muted)] text-sm">Nessun utente confermato.</div>
           ) : (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-[var(--ff-border)]">
+              <thead className="bg-[var(--ff-paper)]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ruolo</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Confermato il</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ultimo accesso</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Nome</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Email</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Ruolo</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Confermato il</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Ultimo accesso</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-[var(--ff-border)]">
                 {confirmed.map((u) => (
-                  <tr key={u.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-3 text-sm font-medium text-gray-900">
-                      {u.profile?.full_name || '-'}
+                  <tr key={u.id} className="hover:bg-[var(--ff-paper)] transition-colors">
+                    <td className="px-6 py-3 text-sm font-semibold text-gray-900">
+                      {u.profile?.full_name || '—'}
                     </td>
-                    <td className="px-6 py-3 text-sm text-gray-900">{u.email}</td>
+                    <td className="px-6 py-3 text-sm text-gray-700">{u.email}</td>
                     <td className="px-6 py-3">
                       {u.profile?.role ? (
                         <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${ROLE_COLORS[u.profile.role] || 'bg-gray-100 text-gray-700'}`}>
                           {ROLE_LABELS[u.profile.role] || u.profile.role}
                         </span>
                       ) : (
-                        <span className="text-gray-400 text-xs">-</span>
+                        <span className="text-[var(--ff-muted)] text-xs">—</span>
                       )}
                     </td>
-                    <td className="px-6 py-3 text-sm text-gray-500">
+                    <td className="px-6 py-3 text-sm text-[var(--ff-muted)]">
                       {u.email_confirmed_at
                         ? new Date(u.email_confirmed_at).toLocaleDateString('it-IT')
-                        : '-'}
+                        : '—'}
                     </td>
-                    <td className="px-6 py-3 text-sm text-gray-500">
+                    <td className="px-6 py-3 text-sm text-[var(--ff-muted)]">
                       {u.last_sign_in_at
                         ? new Date(u.last_sign_in_at).toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' })
                         : 'Mai'}

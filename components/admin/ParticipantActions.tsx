@@ -33,7 +33,7 @@ export default function ParticipantActions({
         <input type="hidden" name="email" value={participantEmail} />
         <button
           type="submit"
-          className="text-blue-600 hover:underline"
+          className="text-[var(--ff-red)] hover:underline"
         >
           Invia invito
         </button>

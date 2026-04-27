@@ -22,7 +22,7 @@ export default async function ImportParticipantsPage() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
         <div className="max-w-4xl mx-auto px-6 py-4">
-          <Link href="/dashboard" className="text-blue-600 hover:underline text-sm block mb-2">
+          <Link href="/dashboard" className="text-[var(--ff-red)] hover:underline text-sm block mb-2">
             Dashboard
           </Link>
           <h1 className="text-2xl font-bold">Importa Partecipanti da CSV</h1>
@@ -50,7 +50,7 @@ export default async function ImportParticipantsPage() {
             </p>
             <Link
               href="/admin/companies/new"
-              className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+              className="inline-block bg-[var(--ff-red)] text-white px-6 py-2 rounded-lg hover:bg-[var(--ff-red-700)]"
             >
               Crea Azienda
             </Link>

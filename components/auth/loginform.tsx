@@ -26,26 +26,21 @@ export default function LoginForm() {
     setError('')
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
-
       window.location.href = '/dashboard'
     } catch (error: any) {
-      setError(error.message || 'Errore durante il login')
+      setError(error.message || 'Credenziali non valide')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-xl p-8">
-      <form onSubmit={handleLogin} className="space-y-6">
+    <div className="bg-white rounded-2xl border border-[var(--ff-border)] shadow-md p-8">
+      <form onSubmit={handleLogin} className="space-y-5">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1.5">
             Email
           </label>
           <input
@@ -54,13 +49,13 @@ export default function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2.5 border border-[var(--ff-border)] rounded-lg text-sm focus:ring-2 focus:ring-[var(--ff-red)] focus:border-transparent outline-none transition"
             placeholder="tua@email.com"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-1.5">
             Password
           </label>
           <input
@@ -69,13 +64,13 @@ export default function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2.5 border border-[var(--ff-border)] rounded-lg text-sm focus:ring-2 focus:ring-[var(--ff-red)] focus:border-transparent outline-none transition"
             placeholder="••••••••"
           />
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="bg-[var(--ff-red-50)] border border-[var(--ff-red-100)] text-[var(--ff-red-700)] px-4 py-3 rounded-lg text-sm">
             {error}
           </div>
         )}
@@ -83,7 +78,7 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-semibold"
+          className="w-full bg-[var(--ff-red)] hover:bg-[var(--ff-red-700)] text-white py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition font-bold text-sm"
         >
           {loading ? 'Caricamento...' : 'Accedi'}
         </button>
@@ -91,7 +86,7 @@ export default function LoginForm() {
         <div className="text-center">
           <a
             href="/login/forgot-password"
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm text-[var(--ff-muted)] hover:text-[var(--ff-red)] transition"
           >
             Password dimenticata?
           </a>
