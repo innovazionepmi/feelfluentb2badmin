@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import AdminNav from '@/components/admin/AdminNav'
 
 export default async function DashboardPage() {
@@ -55,23 +56,27 @@ export default async function DashboardPage() {
       {/* Header */}
       <header className="bg-white border-b border-[var(--ff-border)] shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[var(--ff-red)] flex items-center justify-center text-white font-bold text-sm">
-              FF
+          <Image
+            src="/logo-feelfluent.svg"
+            alt="FeelFluent"
+            width={160}
+            height={36}
+            priority
+          />
+          <div className="flex items-center gap-4">
+            <div className="text-right hidden sm:block">
+              <p className="text-sm font-semibold text-gray-900">{profile?.full_name}</p>
+              <p className="text-xs text-[var(--ff-muted)]">{profile?.role}</p>
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-gray-900 leading-tight">FeelFluent B2B</h1>
-              <p className="text-xs text-[var(--ff-muted)]">{profile?.full_name} · {profile?.role}</p>
-            </div>
+            <form action={handleLogout}>
+              <button
+                type="submit"
+                className="text-sm px-4 py-2 rounded-lg border border-[var(--ff-border)] text-gray-600 hover:bg-[var(--ff-paper)] transition font-medium"
+              >
+                Logout
+              </button>
+            </form>
           </div>
-          <form action={handleLogout}>
-            <button
-              type="submit"
-              className="text-sm px-4 py-2 rounded-lg border border-[var(--ff-border)] text-gray-600 hover:bg-gray-100 transition font-medium"
-            >
-              Logout
-            </button>
-          </form>
         </div>
       </header>
 
