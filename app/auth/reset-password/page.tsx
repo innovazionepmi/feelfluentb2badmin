@@ -16,15 +16,29 @@ export default function ResetPasswordPage() {
   const supabase = createClient()
 
   useEffect(() => {
-    const hash = window.location.hash.slice(1) // rimuove il '#'
-    const params = new URLSearchParams(hash)
+    // Flusso PKCE: il link arriva con ?code=... da scambiare
+    const searchParams = new URLSearchParams(window.location.search)
+    const code = searchParams.get('code')
 
+    if (code) {
+      supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
+        if (error) {
+          setSessionError('Link non valido o scaduto. Richiedi un nuovo link di reset.')
+        } else {
+          setReady(true)
+        }
+      })
+      return
+    }
+
+    // Flusso implicito: token nel hash
+    const hash = window.location.hash.slice(1)
+    const params = new URLSearchParams(hash)
     const access_token = params.get('access_token')
     const refresh_token = params.get('refresh_token')
     const type = params.get('type')
 
     if (access_token && refresh_token && type === 'recovery') {
-      // Flusso implicito: imposto la sessione manualmente dai token nel hash
       supabase.auth.setSession({ access_token, refresh_token }).then(({ error }) => {
         if (error) {
           setSessionError('Link non valido o scaduto. Richiedi un nuovo link di reset.')
@@ -33,7 +47,6 @@ export default function ResetPasswordPage() {
         }
       })
     } else {
-      // Flusso PKCE: la sessione è già stata stabilita dal callback server-side
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session) {
           setReady(true)
