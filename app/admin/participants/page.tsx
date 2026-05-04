@@ -1,6 +1,7 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
 import Link from 'next/link'
 import ParticipantActions from '@/components/admin/ParticipantActions'
 import AdminNav from '@/components/admin/AdminNav'
@@ -64,8 +65,12 @@ export default async function ParticipantsPage({ searchParams }: Props) {
   ) {
     'use server'
     const email = formData.get('email') as string
+    const headersList = await headers()
+    const host = headersList.get('host') || 'b2badmin.feelfluent.com'
+    const protocol = host.includes('localhost') ? 'http' : 'https'
+    const redirectTo = `${protocol}://${host}/auth/reset-password`
     const adminClient = createAdminClient()
-    const { error } = await adminClient.auth.resetPasswordForEmail(email)
+    const { error } = await adminClient.auth.resetPasswordForEmail(email, { redirectTo })
     revalidatePath('/admin/participants')
     if (error) return { success: false, message: `Errore: ${error.message}` }
     return { success: true, message: 'Invito inviato!' }
