@@ -66,7 +66,9 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user && request.nextUrl.pathname === '/login') {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    const role = user.user_metadata?.role ?? user.app_metadata?.role
+    const dest = (role === 'participant' || role === 'tutor') ? '/participant/programs' : '/dashboard'
+    return NextResponse.redirect(new URL(dest, request.url))
   }
 
   // Blocca le route /admin/* ai partecipanti e tutor

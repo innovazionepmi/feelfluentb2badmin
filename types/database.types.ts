@@ -73,6 +73,20 @@ export interface TutorAvailability {
   updated_at: string
 }
 
+export interface LevelCheckSlot {
+  id: string
+  program_id: string
+  tutor_id: string
+  date: string
+  start_time: string
+  end_time: string
+  participant_id: string | null
+  status: 'available' | 'booked' | 'completed'
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface LevelCheckBooking {
   id: string
   participant_id: string

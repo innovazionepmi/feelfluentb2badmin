@@ -19,7 +19,7 @@ export default async function DashboardPage() {
     .single()
 
   if (profile?.role !== 'admin') {
-    redirect('/no-access')
+    redirect('/participant/programs')
   }
 
   const { count: companiesCount } = await supabase
