@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import AdminNav from '@/components/admin/AdminNav'
+import { sendLevelCheckCancelled, sendLevelCheckCompleted } from '@/lib/email'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -70,6 +71,41 @@ export default async function LevelChecksPage({ params }: Props) {
     revalidatePath(`/admin/programs/${id}/level-checks`)
   }
 
+  async function cancelBooking(formData: FormData) {
+    'use server'
+    const slot_id = formData.get('slot_id') as string
+    const adminClient = createAdminClient()
+
+    const { data: slot } = await adminClient
+      .from('level_check_slots')
+      .select('*, tutor:profiles!tutor_id(full_name), participant:profiles!participant_id(full_name, email)')
+      .eq('id', slot_id)
+      .single()
+
+    if (!slot) return
+
+    await adminClient
+      .from('level_check_slots')
+      .update({ participant_id: null, status: 'available', updated_at: new Date().toISOString() })
+      .eq('id', slot_id)
+
+    const p = (slot as any).participant
+    const t = (slot as any).tutor
+    if (p?.email) {
+      await sendLevelCheckCancelled({
+        participantEmail: p.email,
+        participantName: p.full_name,
+        programName: program!.name,
+        date: slot.date,
+        startTime: slot.start_time,
+        endTime: slot.end_time,
+        tutorName: t?.full_name || '',
+      }).catch(console.error)
+    }
+
+    revalidatePath(`/admin/programs/${id}/level-checks`)
+  }
+
   async function completeSlot(formData: FormData) {
     'use server'
     const slot_id = formData.get('slot_id') as string
@@ -79,7 +115,7 @@ export default async function LevelChecksPage({ params }: Props) {
 
     const { data: slot } = await adminClient
       .from('level_check_slots')
-      .select('tutor_id, date')
+      .select('*, tutor:profiles!tutor_id(full_name, personal_room_link), participant:profiles!participant_id(full_name, email)')
       .eq('id', slot_id)
       .single()
 
@@ -101,6 +137,22 @@ export default async function LevelChecksPage({ params }: Props) {
       })
       .eq('program_id', id)
       .eq('participant_id', participant_id)
+
+    const p = (slot as any).participant
+    const t = (slot as any).tutor
+    if (p?.email) {
+      await sendLevelCheckCompleted({
+        participantEmail: p.email,
+        participantName: p.full_name,
+        programName: program!.name,
+        date: slot.date,
+        startTime: slot.start_time,
+        endTime: slot.end_time,
+        tutorName: t?.full_name || '',
+        roomLink: t?.personal_room_link,
+        level: assigned_level,
+      }).catch(console.error)
+    }
 
     revalidatePath(`/admin/programs/${id}/level-checks`)
     revalidatePath(`/admin/programs/${id}`)
@@ -249,18 +301,26 @@ export default async function LevelChecksPage({ params }: Props) {
                             </form>
                           )}
                           {slot.status === 'booked' && slot.participant_id && (
-                            <form action={completeSlot} className="flex items-center gap-2">
-                              <input type="hidden" name="slot_id" value={slot.id} />
-                              <input type="hidden" name="participant_id" value={slot.participant_id} />
-                              <select name="assigned_level" required
-                                className="text-xs border border-[var(--ff-border)] rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[var(--ff-red)]">
-                                <option value="">Livello</option>
-                                {LEVEL_LABELS.map(l => <option key={l} value={l}>{l}</option>)}
-                              </select>
-                              <button type="submit" className="text-xs text-green-600 font-semibold hover:underline">
-                                Completa
-                              </button>
-                            </form>
+                            <div className="flex flex-col gap-2">
+                              <form action={completeSlot} className="flex items-center gap-2">
+                                <input type="hidden" name="slot_id" value={slot.id} />
+                                <input type="hidden" name="participant_id" value={slot.participant_id} />
+                                <select name="assigned_level" required
+                                  className="text-xs border border-[var(--ff-border)] rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[var(--ff-red)]">
+                                  <option value="">Livello</option>
+                                  {LEVEL_LABELS.map(l => <option key={l} value={l}>{l}</option>)}
+                                </select>
+                                <button type="submit" className="text-xs text-green-600 font-semibold hover:underline">
+                                  Completa
+                                </button>
+                              </form>
+                              <form action={cancelBooking}>
+                                <input type="hidden" name="slot_id" value={slot.id} />
+                                <button type="submit" className="text-xs text-orange-500 hover:underline">
+                                  Annulla prenotazione
+                                </button>
+                              </form>
+                            </div>
                           )}
                           {slot.status === 'completed' && (
                             <span className="text-xs text-[var(--ff-muted)]">—</span>
