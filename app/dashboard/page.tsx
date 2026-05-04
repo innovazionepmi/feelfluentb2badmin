@@ -18,6 +18,10 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
+  if (profile?.role !== 'admin') {
+    redirect('/no-access')
+  }
+
   const { count: companiesCount } = await supabase
     .from('companies')
     .select('*', { count: 'exact', head: true })
@@ -60,8 +64,9 @@ export default async function DashboardPage() {
             src="/logo-feelfluent.svg"
             alt="FeelFluent"
             width={160}
-            height={36}
+            height={37}
             priority
+            unoptimized
           />
           <div className="flex items-center gap-4">
             <div className="text-right hidden sm:block">

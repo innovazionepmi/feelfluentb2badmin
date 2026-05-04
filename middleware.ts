@@ -58,7 +58,7 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const publicPaths = ['/login', '/auth/callback', '/auth/reset-password']
+  const publicPaths = ['/login', '/auth/callback', '/auth/reset-password', '/no-access']
   const isPublic = publicPaths.some(p => request.nextUrl.pathname.startsWith(p))
 
   if (!user && !isPublic) {
@@ -67,6 +67,15 @@ export async function middleware(request: NextRequest) {
 
   if (user && request.nextUrl.pathname === '/login') {
     return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  // Blocca le route /admin/* ai partecipanti e tutor
+  if (user && request.nextUrl.pathname.startsWith('/admin/')) {
+    const role = user.user_metadata?.role ?? user.app_metadata?.role
+    const nonAdminRoles = ['participant', 'tutor']
+    if (role && nonAdminRoles.includes(role)) {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
   }
 
   return response
