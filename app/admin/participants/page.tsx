@@ -64,13 +64,18 @@ export default async function ParticipantsPage({ searchParams }: Props) {
     formData: FormData
   ) {
     'use server'
+    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js')
     const email = formData.get('email') as string
     const headersList = await headers()
     const host = headersList.get('host') || 'b2badmin.feelfluent.com'
     const protocol = host.includes('localhost') ? 'http' : 'https'
     const redirectTo = `${protocol}://${host}/auth/reset-password`
-    const adminClient = createAdminClient()
-    const { error } = await adminClient.auth.resetPasswordForEmail(email, { redirectTo })
+    const client = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { flowType: 'implicit', autoRefreshToken: false, persistSession: false } }
+    )
+    const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo })
     revalidatePath('/admin/participants')
     if (error) return { success: false, message: `Errore: ${error.message}` }
     return { success: true, message: 'Invito inviato!' }
