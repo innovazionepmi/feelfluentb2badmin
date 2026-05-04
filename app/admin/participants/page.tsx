@@ -58,12 +58,17 @@ export default async function ParticipantsPage({ searchParams }: Props) {
     revalidatePath('/admin/participants')
   }
 
-  async function sendPasswordReset(formData: FormData) {
+  async function sendPasswordReset(
+    _prevState: { success: boolean; message: string } | null,
+    formData: FormData
+  ) {
     'use server'
     const email = formData.get('email') as string
     const adminClient = createAdminClient()
-    await adminClient.auth.admin.inviteUserByEmail(email)
+    const { error } = await adminClient.auth.resetPasswordForEmail(email)
     revalidatePath('/admin/participants')
+    if (error) return { success: false, message: `Errore: ${error.message}` }
+    return { success: true, message: 'Invito inviato!' }
   }
 
   return (
