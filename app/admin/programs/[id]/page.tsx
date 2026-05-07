@@ -6,6 +6,8 @@ import AdminNav from '@/components/admin/AdminNav'
 import ProgramParticipantActions from '@/components/admin/ProgramParticipantActions'
 import BulkAddParticipants from '@/components/admin/BulkAddParticipants'
 import ProgramTutors from '@/components/admin/ProgramTutors'
+import SendPlanAllButton from '@/components/admin/SendPlanAllButton'
+import { sendPlanToParticipantById } from '@/lib/planHelper'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -207,6 +209,38 @@ export default async function ProgramDetailPage({ params }: Props) {
     revalidatePath(`/admin/programs/${id}`)
   }
 
+  async function sendPlanSingle(participantId: string): Promise<{ ok: boolean; reason?: string }> {
+    'use server'
+    return sendPlanToParticipantById(participantId, id, program!.name)
+  }
+
+  async function sendPlanToAll(): Promise<{ sent: number; skipped: number; errors: string[] }> {
+    'use server'
+    const adminClient = createAdminClient()
+    const { data: participants } = await adminClient
+      .from('program_participants')
+      .select('participant_id')
+      .eq('program_id', id)
+
+    let sent = 0
+    let skipped = 0
+    const errors: string[] = []
+
+    for (const pp of (participants || [])) {
+      try {
+        const res = await sendPlanToParticipantById(pp.participant_id, id, program!.name)
+        if (res.ok) sent++
+        else skipped++
+      } catch (err: any) {
+        errors.push(err.message || 'Errore sconosciuto')
+      }
+      // piccola pausa per non sovraccaricare SMTP
+      await new Promise(r => setTimeout(r, 300))
+    }
+
+    return { sent, skipped, errors }
+  }
+
   const levelCheckDone = (programParticipants || []).filter(pp => pp.level_check_completed).length
   const levelCheckTotal = (programParticipants || []).length
   const assignedTutors = (allTutors || []).filter(t => programTutorIds.has(t.id))
@@ -375,20 +409,28 @@ export default async function ProgramDetailPage({ params }: Props) {
           {/* Colonna destra: tabella partecipanti */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-[var(--ff-border)] flex items-center justify-between bg-[var(--ff-paper)]">
-                <h2 className="text-sm font-bold text-gray-900">
-                  Partecipanti iscritti
-                  <span className="ml-2 text-xs font-normal text-[var(--ff-muted)]">
-                    ({levelCheckDone}/{levelCheckTotal} level check)
-                  </span>
-                </h2>
+              <div className="px-6 py-4 border-b border-[var(--ff-border)] bg-[var(--ff-paper)] space-y-3">
+                <div className="flex items-center justify-between gap-4">
+                  <h2 className="text-sm font-bold text-gray-900">
+                    Partecipanti iscritti
+                    <span className="ml-2 text-xs font-normal text-[var(--ff-muted)]">
+                      ({levelCheckDone}/{levelCheckTotal} level check)
+                    </span>
+                  </h2>
+                  {levelCheckTotal > 0 && (
+                    <div className="w-28 h-1.5 bg-gray-200 rounded-full overflow-hidden shrink-0">
+                      <div
+                        className="h-full bg-green-500 rounded-full transition-all"
+                        style={{ width: `${levelCheckTotal > 0 ? (levelCheckDone / levelCheckTotal) * 100 : 0}%` }}
+                      />
+                    </div>
+                  )}
+                </div>
                 {levelCheckTotal > 0 && (
-                  <div className="w-28 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-green-500 rounded-full transition-all"
-                      style={{ width: `${levelCheckTotal > 0 ? (levelCheckDone / levelCheckTotal) * 100 : 0}%` }}
-                    />
-                  </div>
+                  <SendPlanAllButton
+                    sendPlanToAll={sendPlanToAll}
+                    participantCount={levelCheckTotal}
+                  />
                 )}
               </div>
 
@@ -441,6 +483,7 @@ export default async function ProgramDetailPage({ params }: Props) {
                             levelLabels={LEVEL_LABELS}
                             assignLevel={assignLevel}
                             removeParticipant={removeParticipant}
+                            sendPlan={sendPlanSingle}
                           />
                         </td>
                       </tr>

@@ -28,6 +28,7 @@ interface Props {
   levelLabels: string[]
   assignLevel: (formData: FormData) => Promise<void>
   removeParticipant: (formData: FormData) => Promise<void>
+  sendPlan: (participantId: string) => Promise<{ ok: boolean; reason?: string }>
 }
 
 export default function ProgramParticipantActions({
@@ -36,9 +37,21 @@ export default function ProgramParticipantActions({
   levelLabels,
   assignLevel,
   removeParticipant,
+  sendPlan,
 }: Props) {
   const [showLevelForm, setShowLevelForm] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [sendingPlan, setSendingPlan] = useState(false)
+  const [planResult, setPlanResult] = useState<{ ok: boolean; reason?: string } | null>(null)
+
+  const handleSendPlan = async () => {
+    setSendingPlan(true)
+    setPlanResult(null)
+    const res = await sendPlan(pp.participant_id)
+    setPlanResult(res)
+    setSendingPlan(false)
+    if (res.ok) setTimeout(() => setPlanResult(null), 4000)
+  }
 
   const handleAssignLevel = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -58,13 +71,27 @@ export default function ProgramParticipantActions({
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-3 text-sm">
+      <div className="flex items-center gap-3 text-sm flex-wrap">
         <button
           onClick={() => setShowLevelForm(!showLevelForm)}
           className="text-[var(--ff-red)] hover:underline"
         >
           {pp.level_check_completed ? 'Modifica livello' : 'Assegna livello'}
         </button>
+
+        <button
+          onClick={handleSendPlan}
+          disabled={sendingPlan}
+          className="text-blue-600 hover:underline disabled:opacity-50"
+        >
+          {sendingPlan ? 'Invio...' : 'Invia piano'}
+        </button>
+
+        {planResult && (
+          <span className={`text-xs font-medium ${planResult.ok ? 'text-green-600' : 'text-orange-600'}`}>
+            {planResult.ok ? '✓ Piano inviato' : `⚠ ${planResult.reason || 'Errore'}`}
+          </span>
+        )}
 
         <form onSubmit={handleRemove} className="inline">
           <input type="hidden" name="pp_id" value={pp.id} />
