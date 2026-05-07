@@ -104,7 +104,11 @@ export async function GET(
     ]
   })
 
-  const escape = (v: string) => `"${String(v).replace(/"/g, '""')}"`
+  // Quota solo se il valore contiene virgola, virgolette o a capo
+  const escape = (v: string) => {
+    const s = String(v)
+    return /[,"\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+  }
   const csvLines = [
     headers.map(escape).join(','),
     ...rows.map(r => r.map(escape).join(',')),
