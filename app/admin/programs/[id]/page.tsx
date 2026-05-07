@@ -234,7 +234,7 @@ export default async function ProgramDetailPage({ params }: Props) {
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
 
         {/* Stats rapide */}
-        <div className="grid grid-cols-2 sm:grid-cols-7 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
           <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center">
             <div className="text-3xl font-bold text-gray-800">{levelCheckTotal}</div>
             <div className="text-xs text-[var(--ff-muted)] mt-1">Partecipanti</div>
@@ -276,6 +276,15 @@ export default async function ProgramDetailPage({ params }: Props) {
             <div className="text-3xl font-bold">📅</div>
             <div className="text-xs text-[var(--ff-red)] font-semibold mt-1 group-hover:underline">
               Conversazioni →
+            </div>
+          </Link>
+          <Link
+            href={`/admin/programs/${id}/presenze`}
+            className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-4 text-center hover:border-[var(--ff-red-100)] hover:shadow-md transition group"
+          >
+            <div className="text-3xl font-bold">📋</div>
+            <div className="text-xs text-[var(--ff-red)] font-semibold mt-1 group-hover:underline">
+              Presenze →
             </div>
           </Link>
         </div>
