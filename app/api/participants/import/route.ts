@@ -9,46 +9,34 @@ interface CSVRow {
 }
 
 // Funzione che invia email in background senza bloccare la risposta
-async function sendEmailsInBackground(
-  users: { id: string; email: string }[], 
-  supabaseUrl: string,
-  supabaseServiceKey: string
-) {
-  // Ricrea il client admin qui (importante: deve essere ricreato in questo contesto)
-  const { createServerClient } = await import('@supabase/ssr')
-  
-  const adminSupabase = createServerClient(
-    supabaseUrl,
-    supabaseServiceKey,
-    {
-      cookies: {
-        get() { return undefined },
-        set() {},
-        remove() {},
-      },
-    }
+async function sendEmailsInBackground(users: { id: string; email: string }[]) {
+  const { createClient } = await import('@supabase/supabase-js')
+
+  const client = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { flowType: 'implicit', autoRefreshToken: false, persistSession: false } }
   )
 
+  const redirectTo = `${process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('supabase.co', 'supabase.co').replace(/\/$/, '')
+    ? `https://b2badmin.feelfluent.com/auth/reset-password`
+    : 'https://b2badmin.feelfluent.com/auth/reset-password'}`
+
   console.log(`Inizio invio email in background a ${users.length} utenti...`)
-  
+
   for (let i = 0; i < users.length; i++) {
     try {
       console.log(`Invio email ${i + 1}/${users.length} a ${users[i].email}`)
-      
-      await adminSupabase.auth.admin.inviteUserByEmail(users[i].email)
-      
+      await client.auth.resetPasswordForEmail(users[i].email, { redirectTo })
       console.log(`✓ Email inviata a ${users[i].email}`)
-      
-      // Delay di 20 secondi tra ogni email (tranne l'ultima)
       if (i < users.length - 1) {
-        console.log('Attendo 20 secondi prima della prossima email...')
         await new Promise(resolve => setTimeout(resolve, 20000))
       }
     } catch (error: any) {
       console.error(`✗ Errore email ${users[i].email}:`, error.message)
     }
   }
-  
+
   console.log('✓ Tutte le email inviate in background')
 }
 
@@ -77,6 +65,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     const file = formData.get('file') as File
     const company_id = formData.get('company_id') as string
+    const sendInvite = formData.get('send_invite') === 'true'
 
     if (!file || !company_id) {
       return NextResponse.json({ error: 'File e azienda richiesti' }, { status: 400 })
@@ -188,23 +177,20 @@ export async function POST(request: NextRequest) {
 
     console.log(`Creazione completata: ${created} utenti creati`)
 
-    // Invia email in background (non blocca la risposta)
-    if (createdUsers.length > 0) {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-      
-      // Avvia invio email in background senza aspettare
-      sendEmailsInBackground(createdUsers, supabaseUrl, supabaseServiceKey)
+    // Invia email in background solo se richiesto
+    if (sendInvite && createdUsers.length > 0) {
+      sendEmailsInBackground(createdUsers)
         .catch(error => console.error('Errore invio email background:', error))
     }
 
-    // Risponde immediatamente senza aspettare le email
     return NextResponse.json({
       success: true,
       created,
       total: rows.length,
       errors: errors.length > 0 ? errors : undefined,
-      message: `${created} partecipanti creati con successo. Le email di invito verranno inviate a breve.`
+      message: sendInvite
+        ? `${created} partecipanti creati. Le email di invito verranno inviate a breve.`
+        : `${created} partecipanti creati senza invio email.`
     })
 
   } catch (error: any) {

@@ -23,20 +23,36 @@ export default async function NewParticipantPage() {
     const email = formData.get('email') as string
     const full_name = formData.get('full_name') as string
     const company_id = (formData.get('company_id') as string) || null
+    const sendInvite = formData.get('send_invite') === 'on'
 
     const adminClient = createAdminClient()
 
-    const { data: newUser, error } = await adminClient.auth.admin.inviteUserByEmail(email, {
-      data: { full_name, role: 'participant' },
-    })
+    let userId: string
 
-    if (error || !newUser?.user) {
-      console.error('Errore creazione partecipante:', error)
-      return
+    if (sendInvite) {
+      const { data: newUser, error } = await adminClient.auth.admin.inviteUserByEmail(email, {
+        data: { full_name, role: 'participant' },
+      })
+      if (error || !newUser?.user) {
+        console.error('Errore creazione partecipante:', error)
+        return
+      }
+      userId = newUser.user.id
+    } else {
+      const { data: newUser, error } = await adminClient.auth.admin.createUser({
+        email,
+        email_confirm: false,
+        user_metadata: { full_name, role: 'participant' },
+      })
+      if (error || !newUser?.user) {
+        console.error('Errore creazione partecipante:', error)
+        return
+      }
+      userId = newUser.user.id
     }
 
     await adminClient.from('profiles').upsert({
-      id: newUser.user.id,
+      id: userId,
       email,
       full_name,
       role: 'participant',
@@ -75,9 +91,6 @@ export default async function NewParticipantPage() {
               Email <span className="text-[var(--ff-red)]">*</span>
             </label>
             <input type="email" id="email" name="email" required className={inputCls} placeholder="mario.rossi@azienda.it" />
-            <p className="text-xs text-[var(--ff-muted)] mt-1">
-              Verrà inviata un&apos;email di invito per impostare la password.
-            </p>
           </div>
 
           <div>
@@ -90,10 +103,18 @@ export default async function NewParticipantPage() {
             </select>
           </div>
 
+          <div className="flex items-center gap-2 pt-1">
+            <input type="checkbox" id="send_invite" name="send_invite" defaultChecked
+              className="w-4 h-4 accent-[var(--ff-red)]" />
+            <label htmlFor="send_invite" className="text-sm text-gray-700">
+              Invia email di invito per impostare la password
+            </label>
+          </div>
+
           <div className="flex gap-3 pt-2">
             <button type="submit"
               className="flex-1 bg-[var(--ff-red)] hover:bg-[var(--ff-red-700)] text-white py-2.5 rounded-lg transition font-semibold text-sm">
-              Crea e invia invito
+              Crea partecipante
             </button>
             <Link href="/admin/participants"
               className="flex-1 bg-white border border-[var(--ff-border)] text-gray-700 py-2.5 rounded-lg hover:bg-[var(--ff-paper)] transition text-center font-medium text-sm">

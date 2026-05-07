@@ -11,6 +11,7 @@ interface Company {
 export default function ImportParticipantsForm({ companies }: { companies: Company[] }) {
   const [selectedCompany, setSelectedCompany] = useState('')
   const [file, setFile] = useState<File | null>(null)
+  const [sendInvite, setSendInvite] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -32,6 +33,7 @@ export default function ImportParticipantsForm({ companies }: { companies: Compa
       const formData = new FormData()
       formData.append('file', file)
       formData.append('company_id', selectedCompany)
+      formData.append('send_invite', sendInvite ? 'true' : 'false')
 
       const response = await fetch('/api/participants/import', {
         method: 'POST',
@@ -119,6 +121,19 @@ export default function ImportParticipantsForm({ companies }: { companies: Compa
             {success}
           </div>
         )}
+
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="send_invite"
+            checked={sendInvite}
+            onChange={(e) => setSendInvite(e.target.checked)}
+            className="w-4 h-4 accent-[var(--ff-red)]"
+          />
+          <label htmlFor="send_invite" className="text-sm text-gray-700">
+            Invia email di invito ai partecipanti importati
+          </label>
+        </div>
 
         <div className="flex gap-4">
           <button
