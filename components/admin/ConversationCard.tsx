@@ -60,6 +60,7 @@ const LEVEL_COLORS: Record<string, string> = {
   C2: 'bg-purple-100 text-purple-700',
 }
 const ATTENDANCE_STATUS = [
+  { value: '', label: '— Non registrato' },
   { value: 'present', label: 'Presente' },
   { value: 'absent', label: 'Assente' },
   { value: 'justified', label: 'Giustificato' },
@@ -84,7 +85,7 @@ export default function ConversationCard({
     for (const m of members) {
       const existing = attendances.find(a => a.participant_id === m.participant_id)
       initial[m.participant_id] = {
-        status: existing?.status || 'present',
+        status: existing?.status || '',
         notes: existing?.notes || '',
         entry_time: existing?.entry_time?.slice(0, 5) || '',
         exit_time: existing?.exit_time?.slice(0, 5) || '',
@@ -344,7 +345,7 @@ export default function ConversationCard({
                       <div className="text-xs text-[var(--ff-muted)] truncate">{m.email}</div>
                     </div>
                     <select
-                      value={state?.status || 'present'}
+                      value={state?.status ?? ''}
                       onChange={e => setAttendanceState(prev => ({
                         ...prev,
                         [m.participant_id]: { ...prev[m.participant_id], status: e.target.value },

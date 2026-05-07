@@ -262,9 +262,16 @@ export default async function PresenzeRiepilogoPage({ params }: Props) {
                                     </td>
                                   )
                                 }
+                                if (att.status === 'justified') {
+                                  return (
+                                    <td key={conv.id} className="px-3 py-2 text-center">
+                                      <span className="text-orange-400 font-bold text-base" title="Giustificato">G</span>
+                                    </td>
+                                  )
+                                }
                                 return (
                                   <td key={conv.id} className="px-3 py-2 text-center">
-                                    <span className="text-gray-400 text-xs">{att.status}</span>
+                                    <span className="text-gray-300">—</span>
                                   </td>
                                 )
                               })}
