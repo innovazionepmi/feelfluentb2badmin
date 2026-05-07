@@ -86,7 +86,7 @@ export default async function ProgramConversationsPage({ params }: Props) {
   const { data: allAttendances } = conversationIds.length > 0
     ? await adminClient
         .from('attendances')
-        .select('conversation_id, participant_id, status, notes')
+        .select('conversation_id, participant_id, status, notes, entry_time, exit_time')
         .in('conversation_id', conversationIds)
     : { data: [] }
 
@@ -344,6 +344,8 @@ export default async function ProgramConversationsPage({ params }: Props) {
                     participant_id: a.participant_id,
                     status: a.status,
                     notes: a.notes,
+                    entry_time: (a as any).entry_time ?? null,
+                    exit_time: (a as any).exit_time ?? null,
                   }))
 
                 return (
