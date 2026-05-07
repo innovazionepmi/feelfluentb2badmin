@@ -80,7 +80,10 @@ export async function GET(
     `Ora uscita lezione ${N}`,
   ]
 
-  const rows = (members || []).map(m => {
+  // Solo i presenti
+  const presentMembers = (members || []).filter(m => attMap.get(m.participant_id)?.status === 'present')
+
+  const rows = presentMembers.map(m => {
     const p = Array.isArray(m.profiles) ? (m.profiles[0] as any) : (m.profiles as any)
     const fullName: string = p?.full_name || ''
     const spaceIdx = fullName.indexOf(' ')
@@ -88,30 +91,23 @@ export async function GET(
     const cognome = spaceIdx >= 0 ? fullName.slice(spaceIdx + 1) : ''
     const email: string = p?.email || ''
 
-    const att = attMap.get(m.participant_id)
-    const isPresent = att?.status === 'present'
-    const entryTime: string = isPresent ? ((att?.entry_time as string | undefined)?.slice(0, 5) ?? '') : ''
-    const exitTime: string = isPresent ? ((att?.exit_time as string | undefined)?.slice(0, 5) ?? '') : ''
+    const att = attMap.get(m.participant_id)!
+    const entryTime: string = (att.entry_time as string | undefined)?.slice(0, 5) ?? ''
+    const exitTime: string = (att.exit_time as string | undefined)?.slice(0, 5) ?? ''
 
-    return [
-      email,
-      nome,
-      cognome,
-      groupName,
-      isPresent ? dateFormatted : '',
-      entryTime,
-      exitTime,
-    ]
+    return [email, nome, cognome, groupName, dateFormatted, entryTime, exitTime]
   })
 
-  // Quota solo se il valore contiene virgola, virgolette o a capo
+  // Separatore punto e virgola per Excel italiano
+  // Quota solo se il valore contiene ; " o a capo
+  const SEP = ';'
   const escape = (v: string) => {
     const s = String(v)
-    return /[,"\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+    return /[;"'\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
   }
   const csvLines = [
-    headers.map(escape).join(','),
-    ...rows.map(r => r.map(escape).join(',')),
+    headers.map(escape).join(SEP),
+    ...rows.map(r => r.map(escape).join(SEP)),
   ]
   const csvContent = '﻿' + csvLines.join('\r\n') // BOM per Excel
 
