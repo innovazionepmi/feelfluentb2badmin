@@ -164,7 +164,7 @@ export default async function ProgramConversationsPage({ params }: Props) {
     'use server'
     const conversation_id = formData.get('conversation_id') as string
     const attendance_json = formData.get('attendance_json') as string
-    const records: { participant_id: string; status: string; notes: string | null }[] = JSON.parse(attendance_json)
+    const records: { participant_id: string; status: string; notes: string | null; entry_time: string | null; exit_time: string | null }[] = JSON.parse(attendance_json)
 
     const adminClient = createAdminClient()
     const rows = records.map(r => ({
@@ -172,6 +172,8 @@ export default async function ProgramConversationsPage({ params }: Props) {
       participant_id: r.participant_id,
       status: r.status,
       notes: r.notes,
+      entry_time: r.entry_time || null,
+      exit_time: r.exit_time || null,
       recorded_by: null,
       recorded_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),

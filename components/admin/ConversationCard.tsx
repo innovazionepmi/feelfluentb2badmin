@@ -12,6 +12,8 @@ interface Attendance {
   participant_id: string
   status: string
   notes: string | null
+  entry_time: string | null
+  exit_time: string | null
 }
 
 interface Conversation {
@@ -77,11 +79,16 @@ export default function ConversationCard({
   const [showReschedule, setShowReschedule] = useState(false)
   const [newDate, setNewDate] = useState(conversation.scheduled_date)
   const [newStartTime, setNewStartTime] = useState(conversation.start_time.slice(0, 5))
-  const [attendanceState, setAttendanceState] = useState<Record<string, { status: string; notes: string }>>(() => {
-    const initial: Record<string, { status: string; notes: string }> = {}
+  const [attendanceState, setAttendanceState] = useState<Record<string, { status: string; notes: string; entry_time: string; exit_time: string }>>(() => {
+    const initial: Record<string, { status: string; notes: string; entry_time: string; exit_time: string }> = {}
     for (const m of members) {
       const existing = attendances.find(a => a.participant_id === m.participant_id)
-      initial[m.participant_id] = { status: existing?.status || 'present', notes: existing?.notes || '' }
+      initial[m.participant_id] = {
+        status: existing?.status || 'present',
+        notes: existing?.notes || '',
+        entry_time: existing?.entry_time?.slice(0, 5) || '',
+        exit_time: existing?.exit_time?.slice(0, 5) || '',
+      }
     }
     return initial
   })
@@ -104,7 +111,11 @@ export default function ConversationCard({
     formData.set('conversation_id', conversation.id)
     formData.set('attendance_json', JSON.stringify(
       Object.entries(attendanceState).map(([participant_id, data]) => ({
-        participant_id, status: data.status, notes: data.notes || null,
+        participant_id,
+        status: data.status,
+        notes: data.notes || null,
+        entry_time: data.entry_time || null,
+        exit_time: data.exit_time || null,
       }))
     ))
     await saveAttendance(formData)
@@ -320,37 +331,73 @@ export default function ConversationCard({
       {showAttendance && members.length > 0 && (
         <div className="border-t border-[var(--ff-border)] bg-[var(--ff-paper)] px-4 py-4">
           <h4 className="text-xs font-bold text-gray-700 mb-3 uppercase tracking-wide">Presenze — sessione #{sessionNumber}</h4>
-          <div className="space-y-2">
-            {members.map(m => (
-              <div key={m.participant_id} className="flex items-center gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-gray-900 truncate">{m.full_name}</div>
-                  <div className="text-xs text-[var(--ff-muted)] truncate">{m.email}</div>
+          <div className="space-y-3">
+            {members.map(m => {
+              const state = attendanceState[m.participant_id]
+              const isPresent = state?.status === 'present'
+              return (
+                <div key={m.participant_id} className="bg-white rounded-lg border border-[var(--ff-border)] p-3">
+                  {/* Riga 1: nome + stato */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold text-gray-900 truncate">{m.full_name}</div>
+                      <div className="text-xs text-[var(--ff-muted)] truncate">{m.email}</div>
+                    </div>
+                    <select
+                      value={state?.status || 'present'}
+                      onChange={e => setAttendanceState(prev => ({
+                        ...prev,
+                        [m.participant_id]: { ...prev[m.participant_id], status: e.target.value },
+                      }))}
+                      className="text-xs px-2 py-1.5 border border-[var(--ff-border)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--ff-red)] bg-white"
+                    >
+                      {ATTENDANCE_STATUS.map(s => (
+                        <option key={s.value} value={s.value}>{s.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  {/* Riga 2: orari + note */}
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-[var(--ff-muted)] shrink-0">Entrata</span>
+                      <input
+                        type="time"
+                        value={state?.entry_time || ''}
+                        disabled={!isPresent}
+                        onChange={e => setAttendanceState(prev => ({
+                          ...prev,
+                          [m.participant_id]: { ...prev[m.participant_id], entry_time: e.target.value },
+                        }))}
+                        className="text-xs px-2 py-1 border border-[var(--ff-border)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--ff-red)] bg-white w-24 disabled:opacity-40 disabled:bg-gray-50"
+                      />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-[var(--ff-muted)] shrink-0">Uscita</span>
+                      <input
+                        type="time"
+                        value={state?.exit_time || ''}
+                        disabled={!isPresent}
+                        onChange={e => setAttendanceState(prev => ({
+                          ...prev,
+                          [m.participant_id]: { ...prev[m.participant_id], exit_time: e.target.value },
+                        }))}
+                        className="text-xs px-2 py-1 border border-[var(--ff-border)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--ff-red)] bg-white w-24 disabled:opacity-40 disabled:bg-gray-50"
+                      />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Note..."
+                      value={state?.notes || ''}
+                      onChange={e => setAttendanceState(prev => ({
+                        ...prev,
+                        [m.participant_id]: { ...prev[m.participant_id], notes: e.target.value },
+                      }))}
+                      className="text-xs px-2 py-1 border border-[var(--ff-border)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--ff-red)] flex-1 bg-white"
+                    />
+                  </div>
                 </div>
-                <select
-                  value={attendanceState[m.participant_id]?.status || 'present'}
-                  onChange={e => setAttendanceState(prev => ({
-                    ...prev,
-                    [m.participant_id]: { ...prev[m.participant_id], status: e.target.value },
-                  }))}
-                  className="text-xs px-2 py-1.5 border border-[var(--ff-border)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--ff-red)] bg-white"
-                >
-                  {ATTENDANCE_STATUS.map(s => (
-                    <option key={s.value} value={s.value}>{s.label}</option>
-                  ))}
-                </select>
-                <input
-                  type="text"
-                  placeholder="Note..."
-                  value={attendanceState[m.participant_id]?.notes || ''}
-                  onChange={e => setAttendanceState(prev => ({
-                    ...prev,
-                    [m.participant_id]: { ...prev[m.participant_id], notes: e.target.value },
-                  }))}
-                  className="text-xs px-2 py-1.5 border border-[var(--ff-border)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--ff-red)] w-28 bg-white"
-                />
-              </div>
-            ))}
+              )
+            })}
           </div>
           <button
             onClick={handleSaveAttendance}
