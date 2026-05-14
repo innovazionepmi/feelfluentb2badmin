@@ -67,7 +67,9 @@ export async function middleware(request: NextRequest) {
 
   if (user && request.nextUrl.pathname === '/login') {
     const role = user.user_metadata?.role ?? user.app_metadata?.role
-    const dest = (role === 'participant' || role === 'tutor') ? '/participant/programs' : '/dashboard'
+    let dest = '/dashboard'
+    if (role === 'participant') dest = '/participant/programs'
+    else if (role === 'tutor') dest = '/tutor'
     return NextResponse.redirect(new URL(dest, request.url))
   }
 
@@ -77,6 +79,22 @@ export async function middleware(request: NextRequest) {
     const nonAdminRoles = ['participant', 'tutor']
     if (role && nonAdminRoles.includes(role)) {
       return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+  }
+
+  // Blocca /tutor/* ai partecipanti
+  if (user && request.nextUrl.pathname.startsWith('/tutor')) {
+    const role = user.user_metadata?.role ?? user.app_metadata?.role
+    if (role === 'participant') {
+      return NextResponse.redirect(new URL('/participant/programs', request.url))
+    }
+  }
+
+  // Blocca /participant/* ai tutor
+  if (user && request.nextUrl.pathname.startsWith('/participant')) {
+    const role = user.user_metadata?.role ?? user.app_metadata?.role
+    if (role === 'tutor') {
+      return NextResponse.redirect(new URL('/tutor', request.url))
     }
   }
 
