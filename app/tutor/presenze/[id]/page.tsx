@@ -20,7 +20,7 @@ export default async function TutorPresenzePage({ params }: Props) {
   // Dati conversazione
   const { data: conv } = await adminClient
     .from('conversations')
-    .select('id, group_id, scheduled_date, start_time, end_time, status, notes, groups!group_id(id, name, level, tutor_id)')
+    .select('id, group_id, tutor_id, scheduled_date, start_time, end_time, status, notes, groups!group_id(id, name, level, tutor_id)')
     .eq('id', conversationId)
     .single()
 
@@ -28,8 +28,9 @@ export default async function TutorPresenzePage({ params }: Props) {
 
   const group = Array.isArray(conv.groups) ? conv.groups[0] : conv.groups as any
 
-  // Verifica che il tutor sia assegnato a questo gruppo
-  if (group?.tutor_id !== user.id) redirect('/tutor')
+  // Verifica che il tutor sia assegnato a questa conversazione o al gruppo
+  const isAuthorized = conv.tutor_id === user.id || group?.tutor_id === user.id
+  if (!isAuthorized) redirect('/tutor')
 
   // Numero sessione
   const { data: prevConvs } = await adminClient

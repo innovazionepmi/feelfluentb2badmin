@@ -67,7 +67,7 @@ export default async function TutorDashboardPage({ searchParams }: Props) {
   const { data: conversations } = filteredGroupIds.length > 0
     ? await adminClient
         .from('conversations')
-        .select('id, group_id, scheduled_date, start_time, end_time, meeting_link, status, notes')
+        .select('id, group_id, tutor_id, scheduled_date, start_time, end_time, meeting_link, status, notes')
         .in('group_id', filteredGroupIds)
         .neq('status', 'cancelled')
         .order('scheduled_date', { ascending: true })
@@ -176,7 +176,7 @@ export default async function TutorDashboardPage({ searchParams }: Props) {
           {filtered.map(conv => {
             const group = groupMap.get(conv.group_id) as any
             const program = group ? programMap.get(group.program_id) as any : null
-            const isMyConv = group?.tutor_id === user.id
+            const isMyConv = conv.tutor_id === user.id || group?.tutor_id === user.id
             const groupTutor = Array.isArray(group?.profiles) ? group.profiles[0] : group?.profiles
             const sessionN = sessionNumbers[conv.id]
 
