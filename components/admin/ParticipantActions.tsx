@@ -15,7 +15,7 @@ interface Props {
   participantEmail: string
   participantName: string
   sendPasswordReset: (prevState: InviteState | null, formData: FormData) => Promise<InviteState>
-  deleteParticipant: (formData: FormData) => Promise<void>
+  deleteParticipant: (formData: FormData) => Promise<{ error?: string }>
 }
 
 function InviteButton() {
@@ -43,9 +43,12 @@ export default function ParticipantActions({
 
   const handleDelete = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (confirm(`Eliminare ${participantName}?`)) {
-      const formData = new FormData(e.currentTarget)
-      await deleteParticipant(formData)
+    if (!confirm(`Eliminare definitivamente ${participantName}?\n\nVerranno eliminati anche presenze, iscrizioni ai programmi e assegnazioni ai gruppi.`)) return
+    const formData = new FormData(e.currentTarget)
+    const result = await deleteParticipant(formData)
+    if (result?.error) {
+      alert(`Errore durante l'eliminazione: ${result.error}`)
+    } else {
       router.refresh()
     }
   }

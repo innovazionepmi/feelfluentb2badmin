@@ -51,12 +51,26 @@ export default async function ParticipantsPage({ searchParams }: Props) {
     participants = participants.filter(p => enrolledIds.has(p.id))
   }
 
-  async function deleteParticipant(formData: FormData) {
+  async function deleteParticipant(formData: FormData): Promise<{ error?: string }> {
     'use server'
     const userId = formData.get('user_id') as string
     const adminClient = createAdminClient()
-    await adminClient.auth.admin.deleteUser(userId)
+
+    // Elimina prima tutti i dati collegati (ordine importante per le FK)
+    await adminClient.from('attendances').delete().eq('participant_id', userId)
+    await adminClient.from('group_members').delete().eq('participant_id', userId)
+    await adminClient.from('program_participants').delete().eq('participant_id', userId)
+    await adminClient.from('level_check_slots').delete().eq('participant_id', userId)
+
+    // Elimina profilo
+    await adminClient.from('profiles').delete().eq('id', userId)
+
+    // Elimina utente da Auth
+    const { error } = await adminClient.auth.admin.deleteUser(userId)
+    if (error) return { error: error.message }
+
     revalidatePath('/admin/participants')
+    return {}
   }
 
   async function sendPasswordReset(
