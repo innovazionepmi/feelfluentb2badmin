@@ -15,14 +15,94 @@ export default function AppleIcon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#ffffff',
-          fontSize: 72,
-          fontWeight: 800,
-          fontFamily: 'sans-serif',
-          letterSpacing: '-2px',
+          overflow: 'hidden',
+          position: 'relative',
         }}
       >
-        FF
+        {/* Left gray half */}
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: 90,
+            height: 180,
+            background: '#9CA3AF',
+            display: 'flex',
+          }}
+        />
+
+        {/* Left eye */}
+        <div
+          style={{
+            position: 'absolute',
+            left: 38,
+            top: 52,
+            width: 28,
+            height: 22,
+            borderRadius: '50%',
+            background: 'white',
+            opacity: 0.9,
+            display: 'flex',
+          }}
+        />
+        {/* Right eye */}
+        <div
+          style={{
+            position: 'absolute',
+            right: 38,
+            top: 52,
+            width: 28,
+            height: 22,
+            borderRadius: '50%',
+            background: 'white',
+            opacity: 0.9,
+            display: 'flex',
+          }}
+        />
+
+        {/* Left smile arc (simplified as a bar) */}
+        <div
+          style={{
+            position: 'absolute',
+            left: 30,
+            top: 118,
+            width: 50,
+            height: 8,
+            borderRadius: '0 0 30px 30px',
+            background: 'white',
+            opacity: 0.8,
+            display: 'flex',
+          }}
+        />
+        {/* Right smile arc */}
+        <div
+          style={{
+            position: 'absolute',
+            right: 30,
+            top: 118,
+            width: 50,
+            height: 8,
+            borderRadius: '0 0 30px 30px',
+            background: 'white',
+            opacity: 0.8,
+            display: 'flex',
+          }}
+        />
+
+        {/* White divider */}
+        <div
+          style={{
+            position: 'absolute',
+            left: 88,
+            top: 0,
+            width: 4,
+            height: 180,
+            background: 'white',
+            opacity: 0.8,
+            display: 'flex',
+          }}
+        />
       </div>
     ),
     { ...size }

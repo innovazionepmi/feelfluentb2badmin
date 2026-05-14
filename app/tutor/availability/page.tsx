@@ -137,48 +137,43 @@ export default async function TutorAvailabilityPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div>
-            <Link href="/dashboard" className="text-[var(--ff-red)] hover:underline text-sm block mb-2">
-              Dashboard
-            </Link>
-            <h1 className="text-2xl font-bold">Le mie disponibilità</h1>
-            <p className="text-sm text-gray-500 mt-1">{profile.full_name}</p>
-          </div>
-        </div>
-      </header>
+    <div className="space-y-6">
 
-      <main className="max-w-5xl mx-auto px-6 py-8 space-y-8">
+      <div>
+        <Link href="/tutor" className="text-xs text-[var(--ff-muted)] hover:text-gray-700">
+          ← Torna alle conversazioni
+        </Link>
+        <h1 className="text-xl font-bold text-gray-900 mt-2">Le mie disponibilità</h1>
+        <p className="text-sm text-[var(--ff-muted)] mt-0.5">Gestisci gli slot in cui sei disponibile per sessioni e level check</p>
+      </div>
 
-        <AvailabilityForm tutorId={user.id} addAvailability={addAvailability} />
+      <AvailabilityForm tutorId={user.id} addAvailability={addAvailability} />
 
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-gray-900">Disponibilità future</h2>
-            <span className="text-sm text-gray-500">{availabilities?.length || 0} slot</span>
+      <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-[var(--ff-border)] flex justify-between items-center">
+            <h2 className="text-sm font-bold text-gray-900">Disponibilità future</h2>
+            <span className="text-xs text-[var(--ff-muted)]">{availabilities?.length || 0} slot</span>
           </div>
 
           {!availabilities || availabilities.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-[var(--ff-muted)] text-sm">
               Nessuna disponibilità impostata. Aggiungi la tua prima disponibilità qui sopra.
             </div>
           ) : (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-[var(--ff-border)]">
+              <thead className="bg-[var(--ff-paper)]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Orario</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stato</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ricorrente</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Azioni</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Data</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Orario</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Tipo</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Stato</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Ricorrente</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Azioni</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-[var(--ff-border)]">
                 {availabilities.map((slot) => (
-                  <tr key={slot.id} className="hover:bg-gray-50">
+                  <tr key={slot.id} className="hover:bg-[var(--ff-paper)]">
                     <td className="px-6 py-3 text-sm text-gray-900">
                       {new Date(slot.date + 'T00:00:00').toLocaleDateString('it-IT', {
                         weekday: 'short', day: '2-digit', month: 'short', year: 'numeric'
@@ -223,7 +218,6 @@ export default async function TutorAvailabilityPage() {
             </table>
           )}
         </div>
-      </main>
     </div>
   )
 }

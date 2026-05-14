@@ -1,7 +1,7 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-import Link from 'next/link'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import UserConfirmButton from '../../../components/admin/UserConfirmButton'
 import AdminNav from '../../../components/admin/AdminNav'
 
@@ -19,7 +19,13 @@ const ROLE_COLORS: Record<string, string> = {
   hr_referent: 'bg-yellow-100 text-yellow-800',
 }
 
-export default async function UsersManagementPage() {
+interface Props {
+  searchParams: Promise<{ invited?: string; invite_error?: string }>
+}
+
+export default async function UsersManagementPage({ searchParams }: Props) {
+  const { invited, invite_error } = await searchParams
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -35,10 +41,8 @@ export default async function UsersManagementPage() {
 
   const adminClient = createAdminClient()
 
-  // Recupera tutti gli utenti da Auth (include quelli non confermati)
   const { data: authUsers } = await adminClient.auth.admin.listUsers()
 
-  // Recupera tutti i profili
   const { data: profiles } = await adminClient
     .from('profiles')
     .select('*')
@@ -46,13 +50,11 @@ export default async function UsersManagementPage() {
 
   const profilesMap = new Map(profiles?.map(p => [p.id, p]) || [])
 
-  // Combina: mostra tutti gli utenti con stato conferma email
   const allUsers = (authUsers?.users || []).map(authUser => ({
     ...authUser,
     profile: profilesMap.get(authUser.id),
   }))
 
-  // Separa confermati e non confermati
   const unconfirmed = allUsers.filter(u => !u.email_confirmed_at)
   const confirmed = allUsers.filter(u => u.email_confirmed_at)
 
@@ -60,21 +62,66 @@ export default async function UsersManagementPage() {
     'use server'
     const userId = formData.get('user_id') as string
     const adminClient = createAdminClient()
-
-    // Conferma manualmente l'email dell'utente
-    await adminClient.auth.admin.updateUserById(userId, {
-      email_confirm: true,
-    })
-
+    await adminClient.auth.admin.updateUserById(userId, { email_confirm: true })
     revalidatePath('/admin/users')
   }
 
   async function resendInvite(formData: FormData) {
     'use server'
     const email = formData.get('email') as string
-    const adminClient = createAdminClient()
-    await adminClient.auth.admin.inviteUserByEmail(email)
+    const client = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { flowType: 'implicit', autoRefreshToken: false, persistSession: false } }
+    )
+    await client.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://b2badmin.feelfluent.com/auth/reset-password',
+    })
     revalidatePath('/admin/users')
+  }
+
+  async function inviteAdmin(formData: FormData) {
+    'use server'
+    const email = (formData.get('email') as string).trim().toLowerCase()
+    const full_name = (formData.get('full_name') as string).trim()
+
+    if (!email || !full_name) {
+      redirect('/admin/users?invite_error=Compila+tutti+i+campi')
+    }
+
+    const adminClient = createAdminClient()
+
+    const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
+      email,
+      email_confirm: false,
+      user_metadata: { full_name },
+    })
+
+    if (createError) {
+      redirect(`/admin/users?invite_error=${encodeURIComponent(createError.message)}`)
+    }
+
+    const userId = newUser.user.id
+
+    const { error: profileError } = await adminClient
+      .from('profiles')
+      .upsert({ id: userId, email, full_name, role: 'admin' })
+
+    if (profileError) {
+      await adminClient.auth.admin.deleteUser(userId)
+      redirect(`/admin/users?invite_error=${encodeURIComponent(profileError.message)}`)
+    }
+
+    const client = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { flowType: 'implicit', autoRefreshToken: false, persistSession: false } }
+    )
+    await client.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://b2badmin.feelfluent.com/auth/reset-password',
+    })
+
+    redirect(`/admin/users?invited=${encodeURIComponent(email)}`)
   }
 
   return (
@@ -88,6 +135,54 @@ export default async function UsersManagementPage() {
       <AdminNav />
 
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+
+        {/* Invita nuovo admin */}
+        <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-6">
+          <h2 className="text-sm font-bold text-gray-900 mb-1">Invita nuovo amministratore</h2>
+          <p className="text-xs text-[var(--ff-muted)] mb-4">
+            Verrà creato un account con ruolo admin e inviata un&apos;email per impostare la password.
+          </p>
+
+          {invited && (
+            <div className="mb-4 bg-green-50 border border-green-200 text-green-800 px-4 py-2 rounded-lg text-sm">
+              ✓ Invito inviato a <strong>{invited}</strong>
+            </div>
+          )}
+          {invite_error && (
+            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg text-sm">
+              ⚠ {invite_error}
+            </div>
+          )}
+
+          <form action={inviteAdmin} className="flex items-end gap-3 flex-wrap">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-semibold text-gray-700">Nome completo</label>
+              <input
+                name="full_name"
+                type="text"
+                required
+                placeholder="Es. Mario Rossi"
+                className="text-sm px-3 py-2 border border-[var(--ff-border)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--ff-red)] w-52 bg-white"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-semibold text-gray-700">Email</label>
+              <input
+                name="email"
+                type="email"
+                required
+                placeholder="admin@esempio.com"
+                className="text-sm px-3 py-2 border border-[var(--ff-border)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--ff-red)] w-64 bg-white"
+              />
+            </div>
+            <button
+              type="submit"
+              className="bg-[var(--ff-red)] hover:bg-[var(--ff-red-700)] text-white px-4 py-2 rounded-lg text-sm font-semibold transition shrink-0"
+            >
+              Invia invito
+            </button>
+          </form>
+        </div>
 
         {/* Sezione: utenti da confermare */}
         {unconfirmed.length > 0 && (

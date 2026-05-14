@@ -112,16 +112,24 @@ export default async function TutorDashboardPage({ searchParams }: Props) {
             {programs.length} {programs.length === 1 ? 'programma' : 'programmi'} assegnati
           </p>
         </div>
-        {profile.personal_room_link && (
-          <a
-            href={profile.personal_room_link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 bg-[var(--ff-red)] hover:bg-[var(--ff-red-700)] text-white px-4 py-2 rounded-lg text-sm font-semibold transition"
+        <div className="flex items-center gap-2 shrink-0">
+          <Link
+            href="/tutor/availability"
+            className="bg-white border border-[var(--ff-border)] hover:bg-[var(--ff-paper)] text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition"
           >
-            🎥 Apri stanza virtuale
-          </a>
-        )}
+            📅 Disponibilità
+          </Link>
+          {profile.personal_room_link && (
+            <a
+              href={profile.personal_room_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[var(--ff-red)] hover:bg-[var(--ff-red-700)] text-white px-4 py-2 rounded-lg text-sm font-semibold transition"
+            >
+              🎥 Stanza virtuale
+            </a>
+          )}
+        </div>
       </div>
 
       {/* Filtri */}

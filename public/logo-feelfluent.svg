@@ -1,13 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" fill="none">
-  <!-- Speech bubble icon -->
-  <rect x="0" y="2" width="40" height="30" rx="8" fill="#DA2128"/>
-  <polygon points="8,32 20,44 20,32" fill="#DA2128"/>
-  <!-- FF letters inside bubble -->
-  <text x="7" y="23" font-family="'Nunito', Arial, sans-serif" font-weight="800" font-size="17" fill="white" letter-spacing="-0.5">FF</text>
-  <!-- Wordmark -->
-  <text x="52" y="30" font-family="'Nunito', Arial, sans-serif" font-weight="800" font-size="22" fill="#1A1A1A" letter-spacing="-0.3">
-    feel<tspan fill="#DA2128">fluent</tspan>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 46" fill="none">
+  <defs>
+    <clipPath id="lc">
+      <ellipse cx="17" cy="23" rx="15" ry="20"/>
+    </clipPath>
+    <clipPath id="rc">
+      <ellipse cx="31" cy="23" rx="15" ry="20"/>
+    </clipPath>
+  </defs>
+
+  <!-- Left mask (gray) -->
+  <ellipse cx="17" cy="23" rx="15" ry="20" fill="#9CA3AF"/>
+  <g clip-path="url(#lc)">
+    <!-- Eyebrow -->
+    <path d="M 9 15 Q 17 11 25 15" stroke="#6B7280" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <!-- Eye -->
+    <ellipse cx="17" cy="19" rx="3.5" ry="2.5" fill="white" opacity="0.9"/>
+    <circle cx="17.5" cy="19" r="1.5" fill="#4B5563"/>
+    <!-- Smile -->
+    <path d="M 8 30 Q 17 40 26 30" stroke="white" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- Right mask (red) -->
+  <ellipse cx="31" cy="23" rx="15" ry="20" fill="#DA2128"/>
+  <g clip-path="url(#rc)">
+    <!-- Eyebrow -->
+    <path d="M 23 15 Q 31 11 39 15" stroke="#B01920" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <!-- Eye -->
+    <ellipse cx="31" cy="19" rx="3.5" ry="2.5" fill="white" opacity="0.9"/>
+    <circle cx="31.5" cy="19" r="1.5" fill="#7F1D1D"/>
+    <!-- Smile -->
+    <path d="M 22 30 Q 31 40 40 30" stroke="white" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- S-curve divider between masks -->
+  <path d="M 24 3 C 20 13 28 33 24 43" stroke="white" stroke-width="1.5" fill="none" opacity="0.65"/>
+
+  <!-- Wordmark: "feel" dark + "fluent" red -->
+  <text x="52" y="32"
+        font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
+        font-weight="800"
+        font-size="26"
+        letter-spacing="-0.5">
+    <tspan fill="#1A1A1A">feel</tspan><tspan fill="#DA2128">fluent</tspan>
   </text>
-  <!-- Tagline -->
-  <text x="53" y="43" font-family="'Nunito', Arial, sans-serif" font-weight="600" font-size="9" fill="#6B7280" letter-spacing="0.5">B2B ADMIN</text>
 </svg>
