@@ -2,6 +2,7 @@ import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { revalidatePath } from 'next/cache'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import TutorActions from '../../../components/admin/TutorActions'
 import AdminNav from '../../../components/admin/AdminNav'
 
@@ -27,20 +28,42 @@ export default async function TutorsPage() {
     .eq('role', 'tutor')
     .order('full_name')
 
-  async function deleteTutor(formData: FormData) {
+  async function deleteTutor(formData: FormData): Promise<{ error?: string }> {
     'use server'
     const userId = formData.get('user_id') as string
     const adminClient = createAdminClient()
-    await adminClient.auth.admin.deleteUser(userId)
+    // Cascade delete dati collegati
+    await adminClient.from('program_tutors').delete().eq('tutor_id', userId)
+    await adminClient.from('level_check_slots').delete().eq('tutor_id', userId)
+    // Azzera tutor_id nei gruppi (non eliminiamo i gruppi)
+    await adminClient.from('groups').update({ tutor_id: null }).eq('tutor_id', userId)
+    await adminClient.from('profiles').delete().eq('id', userId)
+    const { error } = await adminClient.auth.admin.deleteUser(userId)
+    if (error) return { error: error.message }
     revalidatePath('/admin/tutors')
+    return {}
   }
 
-  async function sendInvite(formData: FormData) {
+  async function sendInvite(
+    _prevState: { success: boolean; message: string } | null,
+    formData: FormData
+  ): Promise<{ success: boolean; message: string }> {
     'use server'
     const email = formData.get('email') as string
-    const adminClient = createAdminClient()
-    await adminClient.auth.admin.inviteUserByEmail(email)
-    revalidatePath('/admin/tutors')
+    try {
+      const client = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        { auth: { flowType: 'implicit', autoRefreshToken: false, persistSession: false } }
+      )
+      const { error } = await client.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://b2badmin.feelfluent.com/auth/reset-password',
+      })
+      if (error) return { success: false, message: `Errore: ${error.message}` }
+      return { success: true, message: 'Invito inviato!' }
+    } catch (err: any) {
+      return { success: false, message: err.message || 'Errore invio' }
+    }
   }
 
   return (
