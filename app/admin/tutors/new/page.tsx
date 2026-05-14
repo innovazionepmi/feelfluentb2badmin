@@ -1,16 +1,22 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
 const AVAILABLE_LANGUAGES = [
   'Inglese', 'Francese', 'Spagnolo', 'Tedesco', 'Portoghese',
   'Italiano', 'Cinese', 'Giapponese', 'Arabo', 'Russo',
 ]
 
-export default async function NewTutorPage() {
+interface Props {
+  searchParams: Promise<{ error?: string; success?: string }>
+}
+
+export default async function NewTutorPage({ searchParams }: Props) {
+  const { error, success } = await searchParams
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-
   if (!user) redirect('/login')
 
   const { data: profile } = await supabase
@@ -18,7 +24,6 @@ export default async function NewTutorPage() {
     .select('role')
     .eq('id', user.id)
     .single()
-
   if (profile?.role !== 'admin') redirect('/dashboard')
 
   async function createTutor(formData: FormData) {
@@ -31,22 +36,22 @@ export default async function NewTutorPage() {
 
     const adminClient = createAdminClient()
 
-    // Crea utente in Supabase Auth e invia email di invito
-    const { data: newUser, error } = await adminClient.auth.admin.inviteUserByEmail(email, {
-      data: {
-        full_name,
-        role: 'tutor',
-      }
+    // Crea utente senza email automatica (stessa strategia dei partecipanti)
+    const { data: newUser, error: authError } = await adminClient.auth.admin.createUser({
+      email,
+      email_confirm: false,
+      user_metadata: { full_name, role: 'tutor' },
     })
 
-    if (error || !newUser?.user) {
-      console.error('Errore creazione tutor:', error)
-      // In produzione gestire con un redirect con messaggio di errore
-      return
+    if (authError || !newUser?.user) {
+      const msg = authError?.message?.includes('already registered')
+        ? 'Un utente con questa email esiste già'
+        : (authError?.message || 'Errore durante la creazione')
+      redirect(`/admin/tutors/new?error=${encodeURIComponent(msg)}`)
     }
 
-    // Crea il profilo con tutti i dati
-    await adminClient
+    // Crea profilo
+    const { error: profileError } = await adminClient
       .from('profiles')
       .upsert({
         id: newUser.user.id,
@@ -57,7 +62,28 @@ export default async function NewTutorPage() {
         languages: languages.length > 0 ? languages : [],
       })
 
-    redirect('/admin/tutors')
+    if (profileError) {
+      // Rollback utente auth
+      await adminClient.auth.admin.deleteUser(newUser.user.id)
+      redirect(`/admin/tutors/new?error=${encodeURIComponent('Errore creazione profilo: ' + profileError.message)}`)
+    }
+
+    // Invia email invito via Brevo SMTP (resetPasswordForEmail con client implicit)
+    try {
+      const client = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        { auth: { flowType: 'implicit', autoRefreshToken: false, persistSession: false } }
+      )
+      await client.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://b2badmin.feelfluent.com/auth/reset-password',
+      })
+    } catch (emailErr) {
+      console.error('Errore invio email tutor:', emailErr)
+      // Utente creato correttamente, l'email può essere reinviata manualmente
+    }
+
+    redirect('/admin/tutors?success=tutor_created')
   }
 
   return (
@@ -65,13 +91,25 @@ export default async function NewTutorPage() {
       <header className="bg-white shadow">
         <div className="max-w-3xl mx-auto px-6 py-4">
           <Link href="/admin/tutors" className="text-[var(--ff-red)] hover:underline text-sm block mb-2">
-            Torna ai tutor
+            ← Torna ai tutor
           </Link>
           <h1 className="text-2xl font-bold">Nuovo Tutor</h1>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-8">
+
+        {error && (
+          <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            ⚠ {decodeURIComponent(error)}
+          </div>
+        )}
+        {success && (
+          <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
+            ✓ Tutor creato. L&apos;email di invito è stata inviata.
+          </div>
+        )}
+
         <form action={createTutor} className="bg-white rounded-lg shadow p-6 space-y-5">
 
           <div>
@@ -101,7 +139,7 @@ export default async function NewTutorPage() {
               placeholder="tutor@example.com"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Verrà inviata un&apos;email di invito per impostare la password.
+              Verrà inviata un&apos;email per impostare la password.
             </p>
           </div>
 
