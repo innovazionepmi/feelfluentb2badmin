@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
+import { useRouter } from 'next/navigation'
 
 interface InviteState {
   success: boolean
@@ -38,12 +39,14 @@ export default function ParticipantActions({
   deleteParticipant,
 }: Props) {
   const [inviteState, inviteAction] = useActionState(sendPasswordReset, null)
+  const router = useRouter()
 
   const handleDelete = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (confirm(`Eliminare ${participantName}?`)) {
       const formData = new FormData(e.currentTarget)
       await deleteParticipant(formData)
+      router.refresh()
     }
   }
 
