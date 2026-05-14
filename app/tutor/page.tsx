@@ -1,214 +1,256 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 
-export default async function TutorDashboardPage() {
+interface Props {
+  searchParams: Promise<{ program_id?: string; view?: string }>
+}
+
+export default async function TutorDashboardPage({ searchParams }: Props) {
+  const { program_id: filterProgram, view = 'upcoming' } = await searchParams
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
   const adminClient = createAdminClient()
 
-  // Profilo tutor
   const { data: profile } = await adminClient
     .from('profiles')
-    .select('id, full_name, email, personal_room_link')
+    .select('id, full_name, personal_room_link')
     .eq('id', user.id)
     .single()
 
   if (!profile) redirect('/login')
 
-  // Programmi a cui è assegnato
+  // Programmi a cui il tutor è assegnato
   const { data: programTutorRows } = await adminClient
     .from('program_tutors')
     .select('program_id, training_programs!program_id(id, name, status, companies!company_id(name))')
     .eq('tutor_id', user.id)
 
-  const programs = (programTutorRows || []).map(r => r.training_programs as any).filter(Boolean)
+  const programs = (programTutorRows || [])
+    .map(r => r.training_programs as any)
+    .filter(Boolean)
 
-  // Gruppi che segue (tutor_id = user.id)
-  const { data: groups } = await adminClient
+  const programIds = programs.map((p: any) => p.id)
+
+  if (programIds.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900">Ciao, {profile.full_name} 👋</h1>
+        </div>
+        <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-10 text-center text-[var(--ff-muted)] text-sm">
+          Non sei ancora assegnato a nessun programma.
+        </div>
+      </div>
+    )
+  }
+
+  // Tutti i gruppi dei programmi a cui appartiene
+  const { data: allGroups } = await adminClient
     .from('groups')
-    .select('id, name, level, program_id')
-    .eq('tutor_id', user.id)
+    .select('id, name, level, tutor_id, program_id, profiles!tutor_id(full_name)')
+    .in('program_id', programIds)
 
-  const groupIds = (groups || []).map(g => g.id)
+  const groupIds = (allGroups || []).map(g => g.id)
 
-  // Prossime conversazioni dei suoi gruppi
+  // Filtro per programma
+  const filteredGroupIds = filterProgram
+    ? (allGroups || []).filter(g => g.program_id === filterProgram).map(g => g.id)
+    : groupIds
+
+  // Conversazioni
   const today = new Date().toISOString().split('T')[0]
-  const { data: upcoming } = groupIds.length > 0
+
+  const { data: conversations } = filteredGroupIds.length > 0
     ? await adminClient
         .from('conversations')
-        .select('id, group_id, scheduled_date, start_time, end_time, meeting_link, status, groups!group_id(name, level)')
-        .in('group_id', groupIds)
-        .eq('status', 'scheduled')
-        .gte('scheduled_date', today)
+        .select('id, group_id, scheduled_date, start_time, end_time, meeting_link, status, notes')
+        .in('group_id', filteredGroupIds)
+        .neq('status', 'cancelled')
         .order('scheduled_date', { ascending: true })
         .order('start_time', { ascending: true })
-        .limit(20)
     : { data: [] }
 
-  // Conversazioni passate (completate)
-  const { data: past } = groupIds.length > 0
-    ? await adminClient
-        .from('conversations')
-        .select('id, group_id, scheduled_date, start_time, end_time, status, groups!group_id(name, level)')
-        .in('group_id', groupIds)
-        .in('status', ['completed', 'cancelled'])
-        .order('scheduled_date', { ascending: false })
-        .limit(10)
-    : { data: [] }
+  const allConvs = conversations || []
 
-  // Mappa programma per gruppo
-  const programMap = new Map((programs || []).map((p: any) => [p.id, p]))
+  // Filtra per view
+  const filtered = allConvs.filter(c => {
+    if (view === 'upcoming') return c.scheduled_date >= today && c.status === 'scheduled'
+    if (view === 'past') return c.scheduled_date < today || c.status === 'completed'
+    return true // 'all'
+  })
 
-  const STATUS_COLORS: Record<string, string> = {
-    setup: 'bg-gray-100 text-gray-600',
-    level_checks: 'bg-blue-100 text-blue-700',
-    groups_formation: 'bg-yellow-100 text-yellow-700',
-    active: 'bg-green-100 text-green-700',
-    completed: 'bg-purple-100 text-purple-700',
+  // Mappa gruppi e programmi
+  const groupMap = new Map((allGroups || []).map(g => [g.id, g]))
+  const programMap = new Map(programs.map((p: any) => [p.id, p]))
+
+  // Numero sessione per gruppo
+  const sessionNumbers: Record<string, number> = {}
+  const groupCounters: Record<string, number> = {}
+  for (const c of allConvs) {
+    groupCounters[c.group_id] = (groupCounters[c.group_id] || 0) + 1
+    sessionNumbers[c.id] = groupCounters[c.group_id]
   }
-  const STATUS_LABELS: Record<string, string> = {
-    setup: 'In configurazione',
-    level_checks: 'Level Check',
-    groups_formation: 'Formazione gruppi',
-    active: 'Attivo',
-    completed: 'Completato',
+
+  const LEVEL_COLORS: Record<string, string> = {
+    A1: 'bg-red-100 text-red-700', A2: 'bg-orange-100 text-orange-700',
+    B1: 'bg-yellow-100 text-yellow-700', B2: 'bg-green-100 text-green-700',
+    C1: 'bg-blue-100 text-blue-700', C2: 'bg-purple-100 text-purple-700',
   }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-xl font-bold text-gray-900">Ciao, {profile.full_name} 👋</h1>
-        <p className="text-sm text-[var(--ff-muted)] mt-0.5">Benvenuto nella tua area tutor.</p>
-      </div>
+    <div className="space-y-6">
 
-      {/* Stanza virtuale */}
-      {profile.personal_room_link && (
-        <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-5 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold text-gray-900">La tua stanza virtuale</p>
-            <p className="text-xs text-[var(--ff-muted)] mt-0.5 truncate max-w-xs">{profile.personal_room_link}</p>
-          </div>
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900">Ciao, {profile.full_name} 👋</h1>
+          <p className="text-sm text-[var(--ff-muted)] mt-0.5">
+            {programs.length} {programs.length === 1 ? 'programma' : 'programmi'} assegnati
+          </p>
+        </div>
+        {profile.personal_room_link && (
           <a
             href={profile.personal_room_link}
             target="_blank"
             rel="noopener noreferrer"
             className="shrink-0 bg-[var(--ff-red)] hover:bg-[var(--ff-red-700)] text-white px-4 py-2 rounded-lg text-sm font-semibold transition"
           >
-            Apri stanza →
+            🎥 Apri stanza virtuale
           </a>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Prossime conversazioni */}
-      <div>
-        <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">Prossime conversazioni</h2>
-        {!upcoming || upcoming.length === 0 ? (
-          <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-8 text-center text-[var(--ff-muted)] text-sm">
-            Nessuna conversazione programmata.
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {upcoming.map((conv: any) => {
-              const group = Array.isArray(conv.groups) ? conv.groups[0] : conv.groups
-              const prog = (groups || []).find(g => g.id === conv.group_id)
-              const program = prog ? programMap.get(prog.program_id) : null
-              return (
-                <div key={conv.id} className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm px-5 py-4 flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">
+      {/* Filtri */}
+      <div className="flex flex-wrap gap-3 items-center">
+
+        {/* Filtro programma */}
+        <div className="flex items-center gap-1 bg-white rounded-lg border border-[var(--ff-border)] shadow-sm px-1 py-1">
+          <Link
+            href={`/tutor?view=${view}`}
+            className={`px-3 py-1.5 rounded text-xs font-semibold transition ${!filterProgram ? 'bg-[var(--ff-red)] text-white' : 'text-gray-600 hover:bg-[var(--ff-paper)]'}`}
+          >
+            Tutti
+          </Link>
+          {programs.map((p: any) => (
+            <Link
+              key={p.id}
+              href={`/tutor?view=${view}&program_id=${p.id}`}
+              className={`px-3 py-1.5 rounded text-xs font-semibold transition ${filterProgram === p.id ? 'bg-[var(--ff-red)] text-white' : 'text-gray-600 hover:bg-[var(--ff-paper)]'}`}
+            >
+              {p.name}
+            </Link>
+          ))}
+        </div>
+
+        {/* Filtro periodo */}
+        <div className="flex items-center gap-1 bg-white rounded-lg border border-[var(--ff-border)] shadow-sm px-1 py-1">
+          {[
+            { key: 'upcoming', label: 'Prossime' },
+            { key: 'past', label: 'Passate' },
+            { key: 'all', label: 'Tutte' },
+          ].map(opt => (
+            <Link
+              key={opt.key}
+              href={`/tutor?view=${opt.key}${filterProgram ? `&program_id=${filterProgram}` : ''}`}
+              className={`px-3 py-1.5 rounded text-xs font-semibold transition ${view === opt.key ? 'bg-[var(--ff-red)] text-white' : 'text-gray-600 hover:bg-[var(--ff-paper)]'}`}
+            >
+              {opt.label}
+            </Link>
+          ))}
+        </div>
+
+        <span className="text-xs text-[var(--ff-muted)]">{filtered.length} conversazioni</span>
+      </div>
+
+      {/* Lista conversazioni */}
+      {filtered.length === 0 ? (
+        <div className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-10 text-center text-[var(--ff-muted)] text-sm">
+          Nessuna conversazione per i filtri selezionati.
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {filtered.map(conv => {
+            const group = groupMap.get(conv.group_id) as any
+            const program = group ? programMap.get(group.program_id) as any : null
+            const isMyConv = group?.tutor_id === user.id
+            const groupTutor = Array.isArray(group?.profiles) ? group.profiles[0] : group?.profiles
+            const sessionN = sessionNumbers[conv.id]
+
+            return (
+              <div
+                key={conv.id}
+                className={`bg-white rounded-xl border shadow-sm px-5 py-4 flex items-center gap-4 flex-wrap ${
+                  isMyConv ? 'border-[var(--ff-red-100)]' : 'border-[var(--ff-border)]'
+                }`}
+              >
+                {/* Info principale */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <span className="text-sm font-semibold text-gray-900">
                       {new Date(conv.scheduled_date + 'T00:00:00').toLocaleDateString('it-IT', {
-                        weekday: 'long', day: '2-digit', month: 'long',
+                        weekday: 'short', day: '2-digit', month: 'short', year: 'numeric',
                       })}
-                      <span className="text-[var(--ff-muted)] font-normal ml-2">
-                        {conv.start_time.slice(0, 5)}–{conv.end_time.slice(0, 5)}
-                      </span>
-                    </p>
-                    <p className="text-xs text-[var(--ff-muted)] mt-0.5">
-                      Gruppo {group?.name}
-                      {program?.name && <span className="ml-1">· {program.name}</span>}
-                    </p>
+                    </span>
+                    <span className="text-sm text-[var(--ff-muted)]">
+                      {conv.start_time.slice(0, 5)}–{conv.end_time.slice(0, 5)}
+                    </span>
+                    {conv.status === 'completed' && (
+                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-700">Completata</span>
+                    )}
                   </div>
+                  <div className="flex items-center gap-2 flex-wrap text-xs text-[var(--ff-muted)]">
+                    {group?.level && (
+                      <span className={`px-1.5 py-0.5 text-xs font-bold rounded ${LEVEL_COLORS[group.level] || 'bg-gray-100 text-gray-700'}`}>
+                        {group.level}
+                      </span>
+                    )}
+                    <span>{group?.name}</span>
+                    <span>·</span>
+                    <span>Lez. {sessionN}</span>
+                    {program && <><span>·</span><span>{program.name}</span></>}
+                    {!isMyConv && groupTutor?.full_name && (
+                      <><span>·</span><span className="text-gray-500">Tutor: {groupTutor.full_name}</span></>
+                    )}
+                    {isMyConv && (
+                      <span className="px-2 py-0.5 font-semibold rounded-full bg-[var(--ff-red-50)] text-[var(--ff-red)]">
+                        Tua
+                      </span>
+                    )}
+                  </div>
+                  {conv.notes && (
+                    <p className="text-xs text-[var(--ff-muted)] italic mt-1">{conv.notes}</p>
+                  )}
+                </div>
+
+                {/* Azioni */}
+                <div className="flex items-center gap-2 shrink-0">
                   {conv.meeting_link && (
                     <a
                       href={conv.meeting_link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="shrink-0 bg-[var(--ff-red)] hover:bg-[var(--ff-red-700)] text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition"
+                      className="text-xs px-3 py-1.5 rounded-lg border border-[var(--ff-border)] text-gray-700 hover:bg-[var(--ff-paper)] transition"
                     >
-                      Entra →
+                      🔗 Link
                     </a>
                   )}
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Gruppi */}
-      {(groups || []).length > 0 && (
-        <div>
-          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">I miei gruppi</h2>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {(groups || []).map(group => {
-              const program = programMap.get(group.program_id)
-              return (
-                <div key={group.id} className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm px-5 py-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-semibold text-gray-900">{group.name}</span>
-                    {group.level && (
-                      <span className="px-2 py-0.5 text-xs font-bold rounded bg-[var(--ff-red-50)] text-[var(--ff-red)]">
-                        {group.level}
-                      </span>
-                    )}
-                  </div>
-                  {program && (
-                    <div className="flex items-center gap-2">
-                      <p className="text-xs text-[var(--ff-muted)]">{program.name}</p>
-                      <span className={`px-1.5 py-0.5 text-[10px] font-semibold rounded-full ${STATUS_COLORS[program.status] || 'bg-gray-100 text-gray-600'}`}>
-                        {STATUS_LABELS[program.status] || program.status}
-                      </span>
-                    </div>
+                  {isMyConv && (
+                    <Link
+                      href={`/tutor/presenze/${conv.id}`}
+                      className="text-xs px-3 py-1.5 rounded-lg border border-[var(--ff-red-100)] bg-[var(--ff-red-50)] text-[var(--ff-red)] hover:bg-red-100 transition font-semibold"
+                    >
+                      Presenze
+                    </Link>
                   )}
                 </div>
-              )
-            })}
-          </div>
+              </div>
+            )
+          })}
         </div>
-      )}
-
-      {/* Conversazioni passate */}
-      {(past || []).length > 0 && (
-        <details className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm">
-          <summary className="px-5 py-4 text-sm font-semibold text-gray-700 cursor-pointer select-none">
-            Conversazioni passate ({past?.length})
-          </summary>
-          <div className="border-t border-[var(--ff-border)] divide-y divide-[var(--ff-border)]">
-            {(past || []).map((conv: any) => {
-              const group = Array.isArray(conv.groups) ? conv.groups[0] : conv.groups
-              return (
-                <div key={conv.id} className="px-5 py-3 flex items-center justify-between gap-4 opacity-70">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">
-                      {new Date(conv.scheduled_date + 'T00:00:00').toLocaleDateString('it-IT', {
-                        weekday: 'long', day: '2-digit', month: 'long',
-                      })}
-                      <span className="text-[var(--ff-muted)] font-normal ml-2">
-                        {conv.start_time.slice(0, 5)}–{conv.end_time.slice(0, 5)}
-                      </span>
-                    </p>
-                    <p className="text-xs text-[var(--ff-muted)]">Gruppo {group?.name}</p>
-                  </div>
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${conv.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                    {conv.status === 'completed' ? 'Completata' : 'Annullata'}
-                  </span>
-                </div>
-              )
-            })}
-          </div>
-        </details>
       )}
     </div>
   )
