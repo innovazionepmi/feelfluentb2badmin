@@ -126,14 +126,14 @@ export default async function ProgramGroupsPage({ params }: Props) {
 
   // --- SERVER ACTIONS ---
 
-  async function createGroup(formData: FormData) {
+  async function createGroup(formData: FormData): Promise<{ ok: boolean; error?: string }> {
     'use server'
     const name = formData.get('name') as string
     const level = formData.get('level') as string
     const tutor_id = (formData.get('tutor_id') as string) || null
 
     const adminClient = createAdminClient()
-    await adminClient
+    const { error } = await adminClient
       .from('groups')
       .insert({
         program_id: programId,
@@ -142,7 +142,9 @@ export default async function ProgramGroupsPage({ params }: Props) {
         tutor_id,
       })
 
+    if (error) return { ok: false, error: error.message }
     revalidatePath(`/admin/programs/${programId}/groups`)
+    return { ok: true }
   }
 
   async function deleteGroup(formData: FormData) {

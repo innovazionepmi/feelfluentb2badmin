@@ -11,7 +11,7 @@ interface Tutor {
 interface Props {
   levelLabels: string[]
   tutors: Tutor[]
-  createGroup: (formData: FormData) => Promise<void>
+  createGroup: (formData: FormData) => Promise<{ ok: boolean; error?: string }>
 }
 
 export default function CreateGroupForm({ levelLabels, tutors, createGroup }: Props) {
@@ -19,6 +19,7 @@ export default function CreateGroupForm({ levelLabels, tutors, createGroup }: Pr
   const [name, setName] = useState('')
   const [level, setLevel] = useState('')
   const [tutorId, setTutorId] = useState('')
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,11 +30,16 @@ export default function CreateGroupForm({ levelLabels, tutors, createGroup }: Pr
     formData.set('level', level)
     if (tutorId) formData.set('tutor_id', tutorId)
 
+    setError(null)
     startTransition(async () => {
-      await createGroup(formData)
-      setName('')
-      setLevel('')
-      setTutorId('')
+      const result = await createGroup(formData)
+      if (result.ok) {
+        setName('')
+        setLevel('')
+        setTutorId('')
+      } else {
+        setError(result.error || 'Errore durante la creazione del gruppo')
+      }
     })
   }
 
@@ -85,6 +91,10 @@ export default function CreateGroupForm({ levelLabels, tutors, createGroup }: Pr
           <p className="text-xs text-gray-400 mt-1 italic">Nessun tutor assegnato al programma.</p>
         )}
       </div>
+
+      {error && (
+        <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-2 py-1">{error}</p>
+      )}
 
       <button
         type="submit"
