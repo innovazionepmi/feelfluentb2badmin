@@ -110,7 +110,7 @@ export default async function PresenzeRapidePage({ searchParams }: Props) {
         groupMap.set(c.group_id, { id: c.group_id, name: c.group.name, level: c.group.level })
       }
     }
-    const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+    const LEVEL_ORDER = ['Basic1', 'Basic2', 'Medium', 'High']
     groups = [...groupMap.values()].sort((a, b) => {
       const li = LEVEL_ORDER.indexOf(a.level) - LEVEL_ORDER.indexOf(b.level)
       return li !== 0 ? li : a.name.localeCompare(b.name)

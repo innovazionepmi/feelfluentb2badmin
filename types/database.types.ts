@@ -2,7 +2,7 @@ export type UserRole = 'admin' | 'tutor' | 'participant' | 'hr_referent'
 
 export type ProgramStatus = 'setup' | 'level_checks' | 'groups_formation' | 'active' | 'completed'
 
-export type Level = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'
+export type Level = 'Basic1' | 'Basic2' | 'Medium' | 'High'
 
 export type BookingStatus = 'scheduled' | 'completed' | 'cancelled' | 'no_show'
 

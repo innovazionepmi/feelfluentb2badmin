@@ -29,7 +29,7 @@ const STATUS_COLORS: Record<string, string> = {
   completed:        'bg-purple-100 text-purple-700',
 }
 
-const LEVEL_LABELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+const LEVEL_LABELS = ['Basic1', 'Basic2', 'Medium', 'High']
 
 export default async function ProgramDetailPage({ params }: Props) {
   const { id } = await params

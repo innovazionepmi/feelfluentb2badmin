@@ -10,15 +10,13 @@ interface Props {
   params: Promise<{ id: string }>
 }
 
-const LEVEL_LABELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+const LEVEL_LABELS = ['Basic1', 'Basic2', 'Medium', 'High']
 
 const LEVEL_COLORS: Record<string, string> = {
-  A1: 'bg-red-100 text-red-700 border-red-200',
-  A2: 'bg-orange-100 text-orange-700 border-orange-200',
-  B1: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  B2: 'bg-green-100 text-green-700 border-green-200',
-  C1: 'bg-blue-100 text-blue-700 border-blue-200',
-  C2: 'bg-purple-100 text-purple-700 border-purple-200',
+  Basic1: 'bg-blue-100 text-blue-700 border-blue-200',
+  Basic2: 'bg-green-100 text-green-700 border-green-200',
+  Medium: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+  High: 'bg-purple-100 text-purple-700 border-purple-200',
 }
 
 export default async function ProgramGroupsPage({ params }: Props) {
