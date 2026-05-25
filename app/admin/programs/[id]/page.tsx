@@ -165,14 +165,14 @@ export default async function ProgramDetailPage({ params }: Props) {
     revalidatePath(`/admin/programs/${id}`)
   }
 
-  async function assignLevel(formData: FormData) {
+  async function assignLevel(formData: FormData): Promise<{ ok: boolean; error?: string }> {
     'use server'
     const pp_id = formData.get('pp_id') as string
     const assigned_level = (formData.get('assigned_level') as string) || null
     const level_check_tutor_id = (formData.get('level_check_tutor_id') as string) || null
     const notes = (formData.get('notes') as string) || null
     const adminClient = createAdminClient()
-    await adminClient
+    const { error } = await adminClient
       .from('program_participants')
       .update({
         assigned_level,
@@ -183,7 +183,9 @@ export default async function ProgramDetailPage({ params }: Props) {
         updated_at: new Date().toISOString(),
       })
       .eq('id', pp_id)
+    if (error) return { ok: false, error: error.message }
     revalidatePath(`/admin/programs/${id}`)
+    return { ok: true }
   }
 
   async function addTutor(formData: FormData) {

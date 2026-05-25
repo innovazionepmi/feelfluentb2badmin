@@ -26,7 +26,7 @@ interface Props {
   pp: ProgramParticipant
   tutors: Tutor[]
   levelLabels: string[]
-  assignLevel: (formData: FormData) => Promise<void>
+  assignLevel: (formData: FormData) => Promise<{ ok: boolean; error?: string }>
   removeParticipant: (formData: FormData) => Promise<void>
   sendPlan: (participantId: string) => Promise<{ ok: boolean; reason?: string }>
 }
@@ -41,6 +41,7 @@ export default function ProgramParticipantActions({
 }: Props) {
   const [showLevelForm, setShowLevelForm] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [levelError, setLevelError] = useState<string | null>(null)
   const [sendingPlan, setSendingPlan] = useState(false)
   const [planResult, setPlanResult] = useState<{ ok: boolean; reason?: string } | null>(null)
 
@@ -56,10 +57,15 @@ export default function ProgramParticipantActions({
   const handleAssignLevel = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setSubmitting(true)
+    setLevelError(null)
     const formData = new FormData(e.currentTarget)
-    await assignLevel(formData)
+    const result = await assignLevel(formData)
     setSubmitting(false)
-    setShowLevelForm(false)
+    if (result.ok) {
+      setShowLevelForm(false)
+    } else {
+      setLevelError(result.error || 'Errore durante il salvataggio')
+    }
   }
 
   const handleRemove = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -146,6 +152,10 @@ export default function ProgramParticipantActions({
               placeholder="Note sul level check..."
             />
           </div>
+
+          {levelError && (
+            <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-2 py-1">{levelError}</p>
+          )}
 
           <div className="flex gap-2">
             <button
