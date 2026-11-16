@@ -4,12 +4,13 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const NAV_ITEMS = [
-  { href: '/admin/companies',    label: 'Aziende',      icon: '🏢' },
-  { href: '/admin/programs',     label: 'Programmi',    icon: '📋' },
-  { href: '/admin/participants', label: 'Partecipanti', icon: '👥' },
-  { href: '/admin/tutors',       label: 'Tutor',        icon: '👩‍🏫' },
-  { href: '/admin/presenze',     label: 'Presenze',     icon: '✅', highlight: true },
-  { href: '/admin/users',        label: 'Abilita',      icon: '🔓' },
+  { href: '/admin/companies',       label: 'Aziende',      icon: '🏢' },
+  { href: '/admin/programs',        label: 'Programmi',    icon: '📋' },
+  { href: '/admin/participants',    label: 'Partecipanti', icon: '👥' },
+  { href: '/admin/tutors',          label: 'Tutor',        icon: '👩‍🏫' },
+  { href: '/admin/presenze',        label: 'Presenze',     icon: '✅', highlight: true },
+  { href: '/admin/users',           label: 'Abilita',      icon: '🔓' },
+  { href: '/admin/email-templates', label: 'Email',        icon: '✉️' },
 ]
 
 export default function AdminNav() {
