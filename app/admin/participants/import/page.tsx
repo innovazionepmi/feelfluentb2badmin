@@ -18,6 +18,12 @@ export default async function ImportParticipantsPage() {
     .eq('active', true)
     .order('name')
 
+  // Recupera tutti i programmi attivi
+  const { data: programs } = await supabase
+    .from('training_programs')
+    .select('id, name, company_id')
+    .order('name')
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
@@ -56,7 +62,7 @@ export default async function ImportParticipantsPage() {
             </Link>
           </div>
         ) : (
-          <ImportForm companies={companies} />
+          <ImportForm companies={companies} programs={programs || []} />
         )}
       </main>
     </div>

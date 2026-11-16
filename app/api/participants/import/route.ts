@@ -65,6 +65,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     const file = formData.get('file') as File
     const company_id = formData.get('company_id') as string
+    const program_id = (formData.get('program_id') as string) || null
     const sendInvite = formData.get('send_invite') === 'true'
 
     if (!file || !company_id) {
@@ -177,6 +178,28 @@ export async function POST(request: NextRequest) {
 
     console.log(`Creazione completata: ${created} utenti creati`)
 
+    // Iscrivi i nuovi partecipanti al programma se specificato
+    let enrolled = 0
+    if (program_id && createdUsers.length > 0) {
+      const enrollmentRows = createdUsers.map(u => ({
+        program_id,
+        participant_id: u.id,
+        level_check_completed: false,
+      }))
+
+      const { error: enrollError } = await adminSupabase
+        .from('program_participants')
+        .insert(enrollmentRows)
+
+      if (enrollError) {
+        console.error('Errore iscrizione programma:', enrollError)
+        errors.push(`Errore iscrizione al programma: ${enrollError.message}`)
+      } else {
+        enrolled = createdUsers.length
+        console.log(`✓ ${enrolled} partecipanti iscritti al programma ${program_id}`)
+      }
+    }
+
     // Invia email in background solo se richiesto
     if (sendInvite && createdUsers.length > 0) {
       sendEmailsInBackground(createdUsers)
@@ -187,6 +210,7 @@ export async function POST(request: NextRequest) {
       success: true,
       created,
       total: rows.length,
+      enrolled: enrolled > 0 ? enrolled : undefined,
       errors: errors.length > 0 ? errors : undefined,
       message: sendInvite
         ? `${created} partecipanti creati. Le email di invito verranno inviate a breve.`

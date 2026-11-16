@@ -8,18 +8,40 @@ interface Company {
   name: string
 }
 
-export default function ImportParticipantsForm({ companies }: { companies: Company[] }) {
+interface Program {
+  id: string
+  name: string
+  company_id: string
+}
+
+interface Props {
+  companies: Company[]
+  programs: Program[]
+}
+
+export default function ImportParticipantsForm({ companies, programs }: Props) {
   const [selectedCompany, setSelectedCompany] = useState('')
+  const [selectedProgram, setSelectedProgram] = useState('')
   const [file, setFile] = useState<File | null>(null)
-  const [sendInvite, setSendInvite] = useState(true)
+  const [sendInvite, setSendInvite] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const router = useRouter()
 
+  const filteredPrograms = selectedCompany
+    ? programs.filter(p => p.company_id === selectedCompany)
+    : programs
+
+  const handleCompanyChange = (companyId: string) => {
+    setSelectedCompany(companyId)
+    // Reset program selection when company changes
+    setSelectedProgram('')
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!file || !selectedCompany) {
       setError('Seleziona azienda e file CSV')
       return
@@ -34,6 +56,9 @@ export default function ImportParticipantsForm({ companies }: { companies: Compa
       formData.append('file', file)
       formData.append('company_id', selectedCompany)
       formData.append('send_invite', sendInvite ? 'true' : 'false')
+      if (selectedProgram) {
+        formData.append('program_id', selectedProgram)
+      }
 
       const response = await fetch('/api/participants/import', {
         method: 'POST',
@@ -46,8 +71,8 @@ export default function ImportParticipantsForm({ companies }: { companies: Compa
         throw new Error(result.error || 'Errore durante import')
       }
 
-      setSuccess(`Import completato! ${result.created} partecipanti creati su ${result.total}.`)
-      
+      setSuccess(`Import completato! ${result.created} partecipanti creati su ${result.total}.${result.enrolled ? ` ${result.enrolled} iscritti al programma.` : ''}`)
+
       if (result.errors && result.errors.length > 0) {
         setError(`Alcuni errori: ${result.errors.slice(0, 3).join(', ')}`)
       }
@@ -55,12 +80,13 @@ export default function ImportParticipantsForm({ companies }: { companies: Compa
       // Reset form
       setFile(null)
       setSelectedCompany('')
-      
+      setSelectedProgram('')
+
       // Redirect dopo 3 secondi
       setTimeout(() => {
         router.push('/dashboard')
       }, 3000)
-      
+
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -78,7 +104,7 @@ export default function ImportParticipantsForm({ companies }: { companies: Compa
           <select
             id="company"
             value={selectedCompany}
-            onChange={(e) => setSelectedCompany(e.target.value)}
+            onChange={(e) => handleCompanyChange(e.target.value)}
             required
             className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[var(--ff-red)]"
           >
@@ -89,6 +115,30 @@ export default function ImportParticipantsForm({ companies }: { companies: Compa
               </option>
             ))}
           </select>
+        </div>
+
+        <div>
+          <label htmlFor="program" className="block text-sm font-medium mb-2">
+            Programma formativo <span className="text-gray-400 font-normal">(opzionale)</span>
+          </label>
+          <select
+            id="program"
+            value={selectedProgram}
+            onChange={(e) => setSelectedProgram(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[var(--ff-red)]"
+          >
+            <option value="">-- Nessun programma --</option>
+            {filteredPrograms.map((program) => (
+              <option key={program.id} value={program.id}>
+                {program.name}
+              </option>
+            ))}
+          </select>
+          {selectedCompany && filteredPrograms.length === 0 && (
+            <p className="text-sm text-gray-500 mt-1">
+              Nessun programma disponibile per questa azienda.
+            </p>
+          )}
         </div>
 
         <div>
