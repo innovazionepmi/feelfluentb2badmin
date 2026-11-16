@@ -133,26 +133,62 @@ export default async function ParticipantsPage({ searchParams }: Props) {
               Nessun partecipante trovato con i filtri selezionati.
             </div>
           ) : (
-            <table className="min-w-full divide-y divide-[var(--ff-border)]">
-              <thead className="bg-[var(--ff-paper)]">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Nome</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Azienda</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Creato</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Azioni</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-[var(--ff-border)]">
+            <>
+              {/* Desktop */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-[var(--ff-border)]">
+                  <thead className="bg-[var(--ff-paper)]">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Nome</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Email</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Azienda</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Creato</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--ff-muted)] uppercase tracking-wide">Azioni</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-[var(--ff-border)]">
+                    {participants.map((participant) => (
+                      <tr key={participant.id} className="hover:bg-[var(--ff-paper)] transition-colors">
+                        <td className="px-6 py-4 text-sm font-semibold">
+                          <Link href={`/admin/participants/${participant.id}`} className="text-gray-900 hover:text-[var(--ff-red)]">{participant.full_name}</Link>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-700">{participant.email}</td>
+                        <td className="px-6 py-4 text-sm text-gray-700">{(participant.companies as any)?.name || '—'}</td>
+                        <td className="px-6 py-4 text-sm text-[var(--ff-muted)]">
+                          {new Date(participant.created_at).toLocaleDateString('it-IT')}
+                        </td>
+                        <td className="px-6 py-4">
+                          <ParticipantActions
+                            participantId={participant.id}
+                            participantEmail={participant.email}
+                            participantName={participant.full_name}
+                            sendPasswordReset={sendPasswordReset}
+                            deleteParticipant={deleteParticipant}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile */}
+              <div className="sm:hidden divide-y divide-[var(--ff-border)]">
                 {participants.map((participant) => (
-                  <tr key={participant.id} className="hover:bg-[var(--ff-paper)] transition-colors">
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-900">{participant.full_name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{participant.email}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{(participant.companies as any)?.name || '—'}</td>
-                    <td className="px-6 py-4 text-sm text-[var(--ff-muted)]">
-                      {new Date(participant.created_at).toLocaleDateString('it-IT')}
-                    </td>
-                    <td className="px-6 py-4">
+                  <div key={participant.id} className="p-4 bg-white">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <Link href={`/admin/participants/${participant.id}`} className="font-semibold text-gray-900 hover:text-[var(--ff-red)] text-sm block truncate">
+                          {participant.full_name}
+                        </Link>
+                        <div className="text-xs text-[var(--ff-muted)] mt-0.5 truncate">{participant.email}</div>
+                        <div className="text-xs text-gray-500 mt-0.5">{(participant.companies as any)?.name || '—'}</div>
+                      </div>
+                      <span className="text-xs text-[var(--ff-muted)] shrink-0">
+                        {new Date(participant.created_at).toLocaleDateString('it-IT')}
+                      </span>
+                    </div>
+                    <div className="mt-3">
                       <ParticipantActions
                         participantId={participant.id}
                         participantEmail={participant.email}
@@ -160,11 +196,11 @@ export default async function ParticipantsPage({ searchParams }: Props) {
                         sendPasswordReset={sendPasswordReset}
                         deleteParticipant={deleteParticipant}
                       />
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            </>
           )}
         </div>
       </main>

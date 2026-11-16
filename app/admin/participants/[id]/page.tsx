@@ -3,8 +3,15 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { revalidatePath } from 'next/cache'
 
-export default async function EditParticipantPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditParticipantPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ saved?: string }>
+}) {
   const { id } = await params
+  const { saved } = await searchParams
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -53,7 +60,7 @@ export default async function EditParticipantPage({ params }: { params: Promise<
     await adminClient.auth.admin.updateUserById(participantId, { email })
 
     revalidatePath('/admin/participants')
-    redirect('/admin/participants')
+    redirect(`/admin/participants/${id}?saved=1`)
   }
 
   const inputCls = "w-full px-4 py-2.5 border border-[var(--ff-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--ff-red)] text-sm"
@@ -68,6 +75,11 @@ export default async function EditParticipantPage({ params }: { params: Promise<
           <h1 className="text-xl font-bold text-gray-900">Modifica Partecipante</h1>
         </div>
       </header>
+      {saved === '1' && (
+        <div className="bg-green-50 border-b border-green-200">
+          <div className="max-w-3xl mx-auto px-6 py-2 text-sm text-green-700 font-medium">✓ Modifiche salvate</div>
+        </div>
+      )}
 
       <main className="max-w-3xl mx-auto px-6 py-8">
         <form action={updateParticipant} className="bg-white rounded-xl border border-[var(--ff-border)] shadow-sm p-6">

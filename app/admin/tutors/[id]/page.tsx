@@ -10,10 +10,12 @@ const AVAILABLE_LANGUAGES = [
 
 interface Props {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ saved?: string }>
 }
 
-export default async function EditTutorPage({ params }: Props) {
+export default async function EditTutorPage({ params, searchParams }: Props) {
   const { id } = await params
+  const { saved } = await searchParams
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -59,7 +61,7 @@ export default async function EditTutorPage({ params }: Props) {
       .eq('id', id)
 
     revalidatePath('/admin/tutors')
-    redirect('/admin/tutors')
+    redirect(`/admin/tutors/${id}?saved=1`)
   }
 
   const currentLanguages: string[] = tutor.languages || []
@@ -75,6 +77,11 @@ export default async function EditTutorPage({ params }: Props) {
           <p className="text-sm text-gray-500 mt-1">{tutor.email}</p>
         </div>
       </header>
+      {saved === '1' && (
+        <div className="bg-green-50 border-b border-green-200">
+          <div className="max-w-3xl mx-auto px-6 py-2 text-sm text-green-700 font-medium">✓ Modifiche salvate</div>
+        </div>
+      )}
 
       <main className="max-w-3xl mx-auto px-6 py-8">
         <form action={updateTutor} className="bg-white rounded-lg shadow p-6 space-y-5">
