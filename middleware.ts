@@ -66,7 +66,8 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user && request.nextUrl.pathname === '/login') {
-    const role = user.user_metadata?.role ?? user.app_metadata?.role
+    // app_metadata is set by service role only; user_metadata can be changed by the user
+    const role = user.app_metadata?.role ?? user.user_metadata?.role
     let dest = '/dashboard'
     if (role === 'participant') dest = '/participant/programs'
     else if (role === 'tutor') dest = '/tutor'
@@ -75,7 +76,7 @@ export async function middleware(request: NextRequest) {
 
   // Blocca le route /admin/* ai partecipanti e tutor
   if (user && request.nextUrl.pathname.startsWith('/admin/')) {
-    const role = user.user_metadata?.role ?? user.app_metadata?.role
+    const role = user.app_metadata?.role ?? user.user_metadata?.role
     const nonAdminRoles = ['participant', 'tutor']
     if (role && nonAdminRoles.includes(role)) {
       return NextResponse.redirect(new URL('/dashboard', request.url))
@@ -84,7 +85,7 @@ export async function middleware(request: NextRequest) {
 
   // Blocca /tutor/* ai partecipanti
   if (user && request.nextUrl.pathname.startsWith('/tutor')) {
-    const role = user.user_metadata?.role ?? user.app_metadata?.role
+    const role = user.app_metadata?.role ?? user.user_metadata?.role
     if (role === 'participant') {
       return NextResponse.redirect(new URL('/participant/programs', request.url))
     }
@@ -92,7 +93,7 @@ export async function middleware(request: NextRequest) {
 
   // Blocca /participant/* ai tutor
   if (user && request.nextUrl.pathname.startsWith('/participant')) {
-    const role = user.user_metadata?.role ?? user.app_metadata?.role
+    const role = user.app_metadata?.role ?? user.user_metadata?.role
     if (role === 'tutor') {
       return NextResponse.redirect(new URL('/tutor', request.url))
     }
