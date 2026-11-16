@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import ImportForm from '@/components/admin/ImportParticipantsForm'
@@ -18,8 +18,9 @@ export default async function ImportParticipantsPage() {
     .eq('active', true)
     .order('name')
 
-  // Recupera tutti i programmi attivi
-  const { data: programs } = await supabase
+  // Recupera tutti i programmi (admin client per bypassare RLS)
+  const adminClient = createAdminClient()
+  const { data: programs } = await adminClient
     .from('training_programs')
     .select('id, name, company_id')
     .order('name')
